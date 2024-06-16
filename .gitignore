@@ -1,5 +1,5 @@
-.PRG
-.prg
-.bin
-.BIN
+*.PRG
+*.prg
+*.bin
+*.BIN
 

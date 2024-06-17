@@ -104,6 +104,14 @@ vtui_get_decr	= VTUI_LIB+62
 !macro VTUI_SCREEN_SET {
 	jsr	vtui_screen_set
 }
+!macro VTUI_SCREEN_SET .mode {
+	lda	#.mode
+	jsr	vtui_screen_set
+}
+!macro VTUI_SCREEN_SET ~.mode {
+	lda	.mode
+	jsr	vtui_screen_set
+}
 
 ; *****************************************************************************
 ; Set VERA bank (High memory) without touching anything else
@@ -112,6 +120,16 @@ vtui_get_decr	= VTUI_LIB+62
 ; USES:		.A
 ; *****************************************************************************
 !macro VTUI_SET_BANK {
+	jsr	vtui_set_bank
+}
+!macro VTUI_SET_BANK .bank {
+	lda	#.bank
+	lsr
+	jsr	vtui_set_bank
+}
+!macro VTUI_SET_BANK ~.bank {
+	lda	.bank
+	lsr
 	jsr	vtui_set_bank
 }
 
@@ -134,6 +152,14 @@ vtui_get_decr	= VTUI_LIB+62
 !macro VTUI_SET_STRIDE {
 	jsr	vtui_set_stride
 }
+!macro VTUI_SET_STRIDE .stride {
+	lda	#.stride
+	jsr	vtui_set_stride
+}
+!macro VTUI_SET_STRIDE ~.stride {
+	lda	.stride
+	jsr	vtui_set_stride
+}
 
 ; *****************************************************************************
 ; Get current VERA stride value
@@ -151,6 +177,16 @@ vtui_get_decr	= VTUI_LIB+62
 ; USES:			.A
 ; *****************************************************************************
 !macro VTUI_SET_DECR {
+	jsr	vtui_set_decr
+}
+!macro VTUI_SET_DECR .decr {
+	lda	#.decr
+	lsr
+	jsr	vtui_set_decr
+}
+!macro VTUI_SET_DECR ~.decr {
+	lda	.decr
+	lsr
 	jsr	vtui_set_decr
 }
 
@@ -173,6 +209,34 @@ vtui_get_decr	= VTUI_LIB+62
 ; USES:		.A
 ; *****************************************************************************
 !macro VTUI_PLOT_CHAR {
+	jsr	vtui_plot_char
+}
+!macro VTUI_PLOT_CHAR .char {
+	lda	#.char
+	jsr	vtui_plot_char
+}
+!macro VTUI_PLOT_CHAR ~.char {
+	lda	.char
+	jsr	vtui_plot_char
+}
+!macro VTUI_PLOT_CHAR .char, .col {
+	lda	#.char
+	ldx	#.col
+	jsr	vtui_plot_char
+}
+!macro VTUI_PLOT_CHAR ~.char, ~.col {
+	lda	.char
+	ldx	.col
+	jsr	vtui_plot_char
+}
+!macro VTUI_PLOT_CHAR .char, ~.col {
+	lda	#.char
+	ldx	.col
+	jsr	vtui_plot_char
+}
+!macro VTUI_PLOT_CHAR ~.char, .col {
+	lda	.char
+	ldx	#.col
 	jsr	vtui_plot_char
 }
 
@@ -198,6 +262,75 @@ vtui_get_decr	= VTUI_LIB+62
 !macro VTUI_HLINE {
 	jsr	vtui_hline
 }
+!macro VTUI_HLINE .chr, .len, .col {
+	lda	#.chr
+	ldy	#.len
+	ldx	#.col
+	jsr	vtui_hline
+}
+!macro VTUI_HLINE ~.chr, ~.len, ~.col {
+	lda	.chr
+	ldy	.len
+	ldx	.col
+	jsr	vtui_hline
+}
+!macro VTUI_HLINE ~.chr, .len, .col {
+	lda	.chr
+	ldy	#.len
+	ldx	#.col
+	jsr	vtui_hline
+}
+!macro VTUI_HLINE .chr, ~.len, .col {
+	lda	#.chr
+	ldy	.len
+	ldx	#.col
+	jsr	vtui_hline
+}
+!macro VTUI_HLINE ~.chr, ~.len, .col {
+	lda	.chr
+	ldy	.len
+	ldx	#.col
+	jsr	vtui_hline
+}
+!macro VTUI_HLINE .chr, .len, ~.col {
+	lda	#.chr
+	ldy	#.len
+	ldx	.col
+	jsr	vtui_hline
+}
+!macro VTUI_HLINE ~.chr, .len, ~.col {
+	lda	.chr
+	ldy	#.len
+	ldx	.col
+	jsr	vtui_hline
+}
+!macro VTUI_HLINE .chr, ~.len, ~.col {
+	lda	#.chr
+	ldy	.len
+	ldx	.col
+	jsr	vtui_hline
+}
+!macro VTUI_HLINE .chr, .len {
+	lda	#.chr
+	ldy	#.len
+	jsr	vtui_hline
+}
+!macro VTUI_HLINE ~.chr, .len {
+	lda	.chr
+	ldy	#.len
+	jsr	vtui_hline
+}
+!macro VTUI_HLINE .chr, ~.len {
+	lda	#.chr
+	ldy	.len
+	jsr	vtui_hline
+}
+!macro VTUI_HLINE ~.chr, ~.len {
+	lda	.chr
+	ldy	.len
+	jsr	vtui_hline
+}
+
 
 ; *****************************************************************************
 ; Create a vertical line going from top to bottom.
@@ -210,6 +343,74 @@ vtui_get_decr	= VTUI_LIB+62
 !macro VTUI_VLINE {
 	jsr	vtui_vline
 }
+!macro VTUI_VLINE .char, .len, .col {
+	lda	#.char
+	ldy	#.len
+	ldx	#.col
+	jsr	vtui_vline
+}
+!macro VTUI_VLINE ~.char, ~.len, ~.col {
+	lda	.char
+	ldy	.len
+	ldx	.col
+	jsr	vtui_vline
+}
+!macro VTUI_VLINE ~.char, .len, .col {
+	lda	.char
+	ldy	#.len
+	ldx	#.col
+	jsr	vtui_vline
+}
+!macro VTUI_VLINE .char, ~.len, .col {
+	lda	#.char
+	ldy	.len
+	ldx	#.col
+	jsr	vtui_vline
+}
+!macro VTUI_VLINE ~.char, ~.len, .col {
+	lda	.char
+	ldy	.len
+	ldx	#.col
+	jsr	vtui_vline
+}
+!macro VTUI_VLINE .char, .len, ~.col {
+	lda	#.char
+	ldy	#.len
+	ldx	.col
+	jsr	vtui_vline
+}
+!macro VTUI_VLINE ~.char, .len, ~.col {
+	lda	.char
+	ldy	#.len
+	ldx	.col
+	jsr	vtui_vline
+}
+!macro VTUI_VLINE .char, ~.len, ~.col {
+	lda	#.char
+	ldy	.len
+	ldx	.col
+	jsr	vtui_vline
+}
+!macro VTUI_VLINE .char, .len {
+	lda	#.char
+	ldy	#.len
+	jsr	vtui_vline
+}
+!macro VTUI_VLINE ~.char, .len {
+	lda	.char
+	ldy	#.len
+	jsr	vtui_vline
+}
+!macro VTUI_VLINE .char, ~.len {
+	lda	#.char
+	ldy	.len
+	jsr	vtui_vline
+}
+!macro VTUI_VLINE ~.char, ~.len {
+	lda	.char
+	ldy	.len
+	jsr	vtui_vline
+}
 
 ; *****************************************************************************
 ; Set VERA address to point to specific point on screen
@@ -218,6 +419,26 @@ vtui_get_decr	= VTUI_LIB+62
 ;		.Y = y coordinate
 ; *****************************************************************************
 !macro VTUI_GOTOXY {
+	jsr	vtui_gotoxy
+}
+!macro VTUI_GOTOXY .xcord, .ycord {
+	lda	#.xcord
+	ldy	#.ycord
+	jsr	vtui_gotoxy
+}
+!macro VTUI_GOTOXY ~.xcord, .ycord {
+	lda	.xcord
+	ldy	#.ycord
+	jsr	vtui_gotoxy
+}
+!macro VTUI_GOTOXY .xcord, ~.ycord {
+	lda	#.xcord
+	ldy	.ycord
+	jsr	vtui_gotoxy
+}
+!macro VTUI_GOTOXY ~.xcord, ~.ycord {
+	lda	.xcord
+	ldy	.ycord
 	jsr	vtui_gotoxy
 }
 
@@ -230,6 +451,14 @@ vtui_get_decr	= VTUI_LIB+62
 !macro VTUI_PET2SCR {
 	jsr	vtui_pet2scr
 }
+!macro VTUI_PET2SCR .chr {
+	lda	#.chr
+	jsr	vtui_pet2scr
+}
+!macro VTUI_PET2SCR ~.chr {
+	lda	.chr
+	jsr	vtui_pet2scr
+}
 
 ; *****************************************************************************
 ; Convert screencodes between $00 and $3F to PETSCII.
@@ -240,6 +469,14 @@ vtui_get_decr	= VTUI_LIB+62
 !macro VTUI_SCR2PET {
 	jsr	vtui_scr2pet
 }
+!macro VTUI_SCR2PET .chr {
+	lda	#.chr
+	jsr	vtui_scr2pet
+}
+!macro VTUI_SCR2PET ~.chr {
+	lda	.chr
+	jsr	vtui_scr2pet
+}
 
 ; *****************************************************************************
 ; Print PETSCII/Screencode string.
@@ -247,10 +484,240 @@ vtui_get_decr	= VTUI_LIB+62
 ; INPUTS	.A = Convert string (0 = Convert from PETSCII, $80 = no conversion)
 ;		r0 = pointer to string
 ;		.Y = length of string
-;		.X  = bg-/fg color (only used if stride=0,decr=0&bank=0)
+;		.X  = bg-/fg color (only used if stride=1,decr=0&bank=0)
 ; USES:		.A, .Y & r1
 ; *****************************************************************************
 !macro VTUI_PRINT_STR {
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, .len, .conv, .col {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1
+	lda	#.conv
+	ldy	#.len
+	ldx	#.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, .len, .conv, .col {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	#.conv
+	ldy	#.len
+	ldx	#.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, ~.len, .conv, .col {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1
+	lda	#.conv
+	ldy	.len
+	ldx	#.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, ~.len, .conv, .col {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	#.conv
+	ldy	.len
+	ldx	#.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, .len, ~.conv, .col {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1
+	lda	.conv
+	ldy	#.len
+	ldx	#.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, .len, ~.conv, .col {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	.conv
+	ldy	#.len
+	ldx	#.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, ~.len, ~.conv, .col {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1
+	lda	.conv
+	ldy	.len
+	ldx	#.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, ~.len, ~.conv, .col {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	.conv
+	ldy	.len
+	ldx	#.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, .len, .conv, ~.col {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1
+	lda	#.conv
+	ldy	#.len
+	ldx	.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, .len, .conv, ~.col {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	#.conv
+	ldy	#.len
+	ldx	.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, ~.len, .conv, ~.col {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1
+	lda	#.conv
+	ldy	.len
+	ldx	.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, ~.len, .conv, ~.col {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	#.conv
+	ldy	.len
+	ldx	.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, .len, ~.conv, ~.col {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1
+	lda	.conv
+	ldy	#.len
+	ldx	.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, .len, ~.conv, ~.col {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	.conv
+	ldy	#.len
+	ldx	.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, ~.len, ~.conv, ~.col {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1	ldx	#.col
+
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, ~.len, ~.conv, ~.col {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	.conv
+	ldy	.len
+	ldx	.col
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, .len, .conv {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1
+	lda	#.conv
+	ldy	#.len
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, .len, .conv {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	#.conv
+	ldy	#.len
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, ~.len, .conv {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1
+	lda	#.conv
+	ldy	.len
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, ~.len, .conv {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	#.conv
+	ldy	.len
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, .len, ~.conv {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1
+	lda	.conv
+	ldy	#.len
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, .len, ~.conv {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	.conv
+	ldy	#.len
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR .strptr, ~.len, ~.conv {
+	lda	#<.strptr
+	sta	r0
+	lda	#>.strptr
+	sta	r0+1
+	lda	.conv
+	ldy	.len
+	jsr	vtui_print_str
+}
+!macro VTUI_PRINT_STR ~.strptr, ~.len, ~.conv {
+	lda	.strptr
+	sta	r0
+	lda	.strptr+1
+	sta	r0+1
+	lda	.conv
+	ldy	.len
 	jsr	vtui_print_str
 }
 
@@ -265,6 +732,214 @@ vtui_get_decr	= VTUI_LIB+62
 !macro VTUI_FILL_BOX {
 	jsr	vtui_fill_box
 }
+!macro VTUI_FILL_BOX .chr, .width, .height, .col {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.chr
+	ldx	#.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, .width, .height, .col {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.chr
+	ldx	#.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX .chr, ~.width, .height, .col {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.chr
+	ldx	#.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, ~.width, .height, .col {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.chr
+	ldx	#.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX .chr, .width, ~.height, .col {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.chr
+	ldx	#.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, .width, ~.height, .col {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.chr
+	ldx	#.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX .chr, ~.width, ~.height, .col {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.chr
+	ldx	#.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, ~.width, ~.height, .col {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.chr
+	ldx	#.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX .chr, .width, .height, ~.col {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.chr
+	ldx	.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, .width, .height, ~.col {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.chr
+	ldx	.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX .chr, ~.width, .height, ~.col {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.chr
+	ldx	.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, ~.width, .height, ~.col {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.chr
+	ldx	.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX .chr, .width, ~.height, ~.col {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.chr
+	ldx	.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, .width, ~.height, ~.col {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.chr
+	ldx	.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX .chr, ~.width, ~.height, ~.col {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.chr
+	ldx	.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, ~.width, ~.height, ~.col {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.chr
+	ldx	.col
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX .chr, .width, .height {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.chr
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, .width, .height {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.chr
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX .chr, ~.width, .height {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.chr
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, ~.width, .height {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.chr
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX .chr, .width, ~.height {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.chr
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, .width, ~.height {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.chr
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX .chr, ~.width, ~.height {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.chr
+	jsr	vtui_fill_box
+}
+!macro VTUI_FILL_BOX ~.chr, ~.width, ~.height {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.chr
+	jsr	vtui_fill_box
+}
 
 ; *****************************************************************************
 ; Clear the entire screen with specific character and color
@@ -276,6 +951,35 @@ vtui_get_decr	= VTUI_LIB+62
 !macro VTUI_CLR_SCR {
 	jsr	vtui_clr_scr
 }
+!macro VTUI_CLR_SCR .chr, .col {
+	lda	#.chr
+	ldx	#.col
+	jsr	vtui_clr_scr
+}
+!macro VTUI_CLR_SCR ~.chr, .col {
+	lda	.chr
+	ldx	#.col
+	jsr	vtui_clr_scr
+}
+!macro VTUI_CLR_SCR .chr, ~.col {
+	lda	#.chr
+	ldx	.col
+	jsr	vtui_clr_scr
+}
+!macro VTUI_CLR_SCR ~.chr, ~.col {
+	lda	.chr
+	ldx	.col
+	jsr	vtui_clr_scr
+}
+!macro VTUI_CLR_SCR .chr {
+	lda	#.chr
+	jsr	vtui_clr_scr
+}
+!macro VTUI_CLR_SCR ~.chr {
+	lda	.chr
+	jsr	vtui_clr_scr
+}
+
 
 ; *****************************************************************************
 ; Create a box with a specific border
@@ -287,6 +991,214 @@ vtui_get_decr	= VTUI_LIB+62
 ; USES		.Y, r0, r1h & r2h
 ; *****************************************************************************
 !macro VTUI_BORDER {
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, .width, .height, .col {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.mode
+	ldx	#.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, .width, .height, .col {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.mode
+	ldx	#.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, ~.width, .height, .col {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.mode
+	ldx	#.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, ~.width, .height, .col {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.mode
+	ldx	#.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, .width, ~.height, .col {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.mode
+	ldx	#.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, .width, ~.height, .col {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.mode
+	ldx	#.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, ~.width, ~.height, .col {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.mode
+	ldx	#.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, ~.width, ~.height, .col {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.mode
+	ldx	#.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, .width, .height, ~.col {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.mode
+	ldx	.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, .width, .height, ~.col {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.mode
+	ldx	.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, ~.width, .height, ~.col {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.mode
+	ldx	.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, ~.width, .height, ~.col {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.mode
+	ldx	.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, .width, ~.height, ~.col {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.mode
+	ldx	.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, .width, ~.height, ~.col {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.mode
+	ldx	.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, ~.width, ~.height, ~.col {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.mode
+	ldx	.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, ~.width, ~.height, ~.col {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.mode
+	ldx	.col
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, .width, .height {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.mode
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, .width, .height {
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.mode
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, ~.width, .height {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.mode
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, ~.width, .height {
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.mode
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, .width, ~.height {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.mode
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, .width, ~.height {
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.mode
+	jsr	vtui_border
+}
+!macro VTUI_BORDER .mode, ~.width, ~.height {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.mode
+	jsr	vtui_border
+}
+!macro VTUI_BORDER ~.mode, ~.width, ~.height {
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.mode
 	jsr	vtui_border
 }
 
@@ -304,6 +1216,326 @@ vtui_get_decr	= VTUI_LIB+62
 !macro VTUI_SAVE_RECT {
 	jsr	vtui_save_rect
 }
+!macro VTUI_SAVE_RECT .destaddr, .width, .height, .bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, .width, .height, .bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT .destaddr, ~.width, .height, .bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, ~.width, .height, .bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT .destaddr, .width, ~.height, .bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, .width, ~.height, .bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT .destaddr, ~.width, ~.height, .bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, ~.width, ~.height, .bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT .destaddr, .width, .height, ~.bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, .width, .height, ~.bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT .destaddr, ~.width, .height, ~.bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, ~.width, .height, ~.bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT .destaddr, .width, ~.height, ~.bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, .width, ~.height, ~.bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT .destaddr, ~.width, ~.height, ~.bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, ~.width, ~.height, ~.bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT .destaddr, .width, .height {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, .width, .height {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT .destaddr, ~.width, .height {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, ~.width, .height {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT .destaddr, .width, ~.height {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, .width, ~.height {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT .destaddr, ~.width, ~.height {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_save_rect
+}
+!macro VTUI_SAVE_RECT ~.destaddr, ~.width, ~.height {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_save_rect
+}
 
 ; *****************************************************************************
 ; Restore contents of screen from other memory area in either system RAM
@@ -318,6 +1550,326 @@ vtui_get_decr	= VTUI_LIB+62
 !macro VTUI_REST_RECT {
 	jsr	vtui_rest_rect
 }
+!macro VTUI_REST_RECT .destaddr, .width, .height, .bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, .width, .height, .bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT .destaddr, ~.width, .height, .bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, ~.width, .height, .bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT .destaddr, .width, ~.height, .bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, .width, ~.height, .bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT .destaddr, ~.width, ~.height, .bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, ~.width, ~.height, .bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT .destaddr, .width, .height, ~.bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, .width, .height, ~.bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT .destaddr, ~.width, .height, ~.bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, ~.width, .height, ~.bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT .destaddr, .width, ~.height, ~.bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, .width, ~.height, ~.bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT .destaddr, ~.width, ~.height, ~.bank {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, ~.width, ~.height, ~.bank {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	.bank
+	lsr
+	lda	#$80
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT .destaddr, .width, .height {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, .width, .height {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT .destaddr, ~.width, .height {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, ~.width, .height {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	#.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT .destaddr, .width, ~.height {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, .width, ~.height {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	#.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT .destaddr, ~.width, ~.height {
+	lda	#<.destaddr
+	sta	r0
+	lda	#>.destaddr
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_rest_rect
+}
+!macro VTUI_REST_RECT ~.destaddr, ~.width, ~.height {
+	lda	.destaddr
+	sta	r0
+	lda	.destaddr+1
+	sta	r0+1
+	lda	.width
+	sta	r1l
+	lda	.height
+	sta	r2l
+	lda	#0
+	jsr	vtui_rest_rect
+}
 
 ; *****************************************************************************
 ; Show a cursor and get a string input from keyboard.
@@ -329,6 +1881,110 @@ vtui_get_decr	= VTUI_LIB+62
 ; USES:		.A & r1
 ; *****************************************************************************
 !macro VTUI_INPUT_STR {
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR .ptr, .maxlen, .col {
+	lda	#<.ptr
+	sta	r0
+	lda	#>.ptr
+	sta	r0+1
+	ldy	#.maxlen
+	ldx	#.col
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR ~.ptr, .maxlen, .col {
+	lda	.ptr
+	sta	r0
+	lda	.ptr+1
+	sta	r0+1
+	ldy	#.maxlen
+	ldx	#.col
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR .ptr, ~.maxlen, .col {
+	lda	#<.ptr
+	sta	r0
+	lda	#>.ptr
+	sta	r0+1
+	ldy	.maxlen
+	ldx	#.col
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR ~.ptr, ~.maxlen, .col {
+	lda	.ptr
+	sta	r0
+	lda	.ptr+1
+	sta	r0+1
+	ldy	.maxlen
+	ldx	#.col
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR .ptr, .maxlen, ~.col {
+	lda	#<.ptr
+	sta	r0
+	lda	#>.ptr
+	sta	r0+1
+	ldy	#.maxlen
+	ldx	.col
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR ~.ptr, .maxlen, ~.col {
+	lda	.ptr
+	sta	r0
+	lda	.ptr+1
+	sta	r0+1
+	ldy	#.maxlen
+	ldx	.col
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR .ptr, ~.maxlen, ~.col {
+	lda	#<.ptr
+	sta	r0
+	lda	#>.ptr
+	sta	r0+1
+	ldy	.maxlen
+	ldx	.col
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR ~.ptr, ~.maxlen, ~.col {
+	lda	.ptr
+	sta	r0
+	lda	.ptr+1
+	sta	r0+1
+	ldy	.maxlen
+	ldx	.col
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR .ptr, .maxlen {
+	lda	#<.ptr
+	sta	r0
+	lda	#>.ptr
+	sta	r0+1
+	ldy	#.maxlen
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR ~.ptr, .maxlen {
+	lda	.ptr
+	sta	r0
+	lda	.ptr+1
+	sta	r0+1
+	ldy	#.maxlen
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR .ptr, ~.maxlen {
+	lda	#<.ptr
+	sta	r0
+	lda	#>.ptr
+	sta	r0+1
+	ldy	.maxlen
+	jsr	vtui_input_str
+}
+!macro VTUI_INPUT_STR ~.ptr, ~.maxlen {
+	lda	.ptr
+	sta	r0
+	lda	.ptr+1
+	sta	r0+1
+	ldy	.maxlen
 	jsr	vtui_input_str
 }
 

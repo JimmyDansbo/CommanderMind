@@ -1,6 +1,15 @@
 #ifndef _x16maze_h_
 #define _x16maze_h_
 
+typedef unsigned u16;
+typedef unsigned char u8;
+typedef int s16;
+typedef char s8;
+typedef unsigned long u32;
+typedef long s32;
+
+extern void __fastcall__ dummy(char var);
+
 #define BLACK		0x00
 #define WHITE		0x01
 #define RED		0x02
@@ -99,8 +108,6 @@
 #define VERA_AUDIO_DATA	0x9F3D
 #define VERA_SPI_DATA	0x9F3E
 #define VERA_SPI_CTRL	0x9F3F
-
-extern void __fastcall__ dummy(char var);
 
 #define SPRITE_MODE_4BPP	0
 #define SPRITE_MODE_8BPP	1

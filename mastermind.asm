@@ -1,15 +1,16 @@
 .import popa			; For retrieveing parameters from C
 
-.export _dummy
+.export _breakpoint
+.export _dbg8
+.export _dbg16
 
 .segment "CODE"
 
-_dummy: .byte $db
-	pha
-	pla
-	; Return value of carry bit
-	lda	#0		; Empty .A
-	rol			; Move carry bit to .A
-	eor	#1		; Invert value so it works in C code
-	ldx	#0		; Zero out X as X=high byte of 16bit return value
-	rts
+; *****************************************************************************
+; Introduce a breakpoint into the emulators debugger
+; *****************************************************************************
+_breakpoint:
+_dbg8:
+_dbg16:
+        .byte $db
+        rts

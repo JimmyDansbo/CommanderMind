@@ -6,6 +6,5 @@
 
 
 int main() {
-	dummy(20);
 	return (0);
 }

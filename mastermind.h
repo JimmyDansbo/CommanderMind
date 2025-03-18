@@ -1,14 +1,16 @@
 #ifndef _x16maze_h_
 #define _x16maze_h_
 
-typedef unsigned u16;
 typedef unsigned char u8;
-typedef int s16;
 typedef char s8;
+typedef unsigned u16;
+typedef int s16;
 typedef unsigned long u32;
 typedef long s32;
 
-extern void __fastcall__ dummy(char var);
+extern void __fastcall__ dbg8(char var);
+extern void __fastcall__ dbg16(u16 var);
+extern void __fastcall__ breakpoint();
 
 #define BLACK		0x00
 #define WHITE		0x01

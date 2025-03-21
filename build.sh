@@ -1,10 +1,10 @@
 #!/bin/bash
 
-rm -rf MASTER.PRG mastera.o
+rm -rf COMMIND.PRG mastera.o
 
 #Build assembly helper-functions
-ca65 -t cx16 -o mastera.o mastermind.asm
+ca65 -t cx16 -o comminda.o commandermind.asm
 #Build and link main program
 cl65 -t cx16 \
-     -m mastermind.map -Ln mastermaind.sym -o MASTER.PRG \
-     mastermind.c mastera.o
+     -m commandermind.map -Ln commandermind.sym -o COMMIND.PRG \
+     commandermind.c comminda.o

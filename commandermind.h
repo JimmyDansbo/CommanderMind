@@ -1,5 +1,5 @@
-#ifndef _x16maze_h_
-#define _x16maze_h_
+#ifndef _commandermind_h_
+#define _commandermind_h_
 
 typedef unsigned char u8;
 typedef char s8;

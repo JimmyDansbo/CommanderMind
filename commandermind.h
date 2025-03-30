@@ -11,6 +11,7 @@ typedef long s32;
 extern void __fastcall__ dbg8(char var);
 extern void __fastcall__ dbg16(u16 var);
 extern void __fastcall__ breakpoint();
+extern char __fastcall__ vload(char *str, unsigned int addr, char bank);
 
 #define BLACK		0x00
 #define WHITE		0x01

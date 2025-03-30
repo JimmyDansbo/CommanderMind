@@ -1,7 +1,6 @@
 *.PRG
 *.prg
 *.bin
-*.BIN
 *.map
 *.sym
 *.o

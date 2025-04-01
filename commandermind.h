@@ -48,8 +48,9 @@ extern char __fastcall__ vload(char *str, unsigned int addr, char bank);
 #define	RAM_BANK	0x0000
 #define ROM_BANK	0x0001
 
-#define VERA_ADDR	0x9F20
-#define VERA_ADDR_HI	0x9F22
+#define VERA_ADDR_L	0x9F20
+#define VERA_ADDR_M	0x9F21
+#define VERA_ADDR_H	0x9F22
 #define VERA_DATA0	0x9F23
 #define VERA_DATA1	0x9F24
 #define VERA_CTRL	0x9F25

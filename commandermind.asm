@@ -48,8 +48,8 @@ vbase:=*-2
         ldy     vbase+1
         jsr     $FFBD           ; SETNAM
 
-        plx                     ; Pull address to load to from stack
-        ply
+        ply                     ; Pull address to load to from stack
+        plx
         pla                     ; 0=load, 1=verify, 2=VRAM,0xxxx, 3=VRAM,1xxxx
         jsr     $FFD5           ; LOAD
 

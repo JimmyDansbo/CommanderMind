@@ -12,6 +12,8 @@ extern void __fastcall__ dbg8(char var);
 extern void __fastcall__ dbg16(u16 var);
 extern void __fastcall__ breakpoint();
 extern char __fastcall__ vload(char *str, unsigned int addr, char bank);
+extern void __fastcall__ enamouse();
+extern u16  __fastcall__ getmouse(char zp);
 
 #define BLACK		0x00
 #define WHITE		0x01
@@ -29,7 +31,6 @@ extern char __fastcall__ vload(char *str, unsigned int addr, char bank);
 #define LIGHTGREEN	0x0D
 #define LIGHTBLUE	0x0E
 #define LIGHTGRAY	0x0F
-#define WALLCOL		LIGHTGRAY
 
 // Joystick button values
 #define SNES_B		0x80
@@ -48,6 +49,7 @@ extern char __fastcall__ vload(char *str, unsigned int addr, char bank);
 #define	RAM_BANK	0x0000
 #define ROM_BANK	0x0001
 
+#define VERA_ADDR	0x9F20
 #define VERA_ADDR_L	0x9F20
 #define VERA_ADDR_M	0x9F21
 #define VERA_ADDR_H	0x9F22
@@ -125,6 +127,32 @@ extern char __fastcall__ vload(char *str, unsigned int addr, char bank);
 #define SPRITE_HEIGHT_16	1
 #define SPRITE_HEIGHT_32	2
 #define SPRITE_HEIGHT_64	3
+
+#define TMP0		0x0030
+#define	TMP1		0x0031
+#define TMP2		0x0032
+#define TMP3		0x0033
+#define TMP4		0x0034
+#define TMP5		0x0035
+#define TMP6		0x0036
+#define TMP7		0x0037
+#define TMP8		0x0038
+#define TMP9		0x0039
+#define TMPa		0x003A
+#define TMPb		0x003B
+#define TMPc		0x003C
+#define TMPd		0x003D
+#define TMPe		0x003E
+#define TMPf		0x003F
+#define TMP_PTR0	TMP0
+#define TMP_PTR1	TMP2
+#define TMP_PTR2	TMP4
+#define TMP_PTR3	TMP6
+#define TMP_PTR4	TMP8
+#define TMP_PTR5	TMPa
+#define TMP_PTR6	TMPc
+#define TMP_PTR7	TMPe
+
 
 struct _spriteattributes {
 	unsigned int address;

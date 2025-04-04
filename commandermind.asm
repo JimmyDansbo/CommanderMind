@@ -4,8 +4,52 @@
 .export _dbg8
 .export _dbg16
 .export _vload
+.export _enamouse
+.export _getmouse
 
 .segment "CODE"
+; ZeroPage variables/pointers
+TMP0		= $30
+TMP1		= $31
+TMP2		= $32
+TMP3		= $33
+TMP4		= $34
+TMP5		= $35
+TMP6		= $36
+TMP7		= $37
+TMP8		= $38
+TMP9		= $39
+TMPa		= $3A
+TMPb		= $3B
+TMPc		= $3C
+TMPd		= $3D
+TMPe		= $3E
+TMPf		= $3F
+TMP_PTR0	= TMP0
+TMP_PTR1	= TMP2
+TMP_PTR2	= TMP4
+TMP_PTR3	= TMP6
+TMP_PTR4	= TMP8
+TMP_PTR5	= TMPa
+TMP_PTR6	= TMPc
+TMP_PTR7	= TMPe
+
+; *****************************************************************************
+; Get mouse state, coordinates as button presses
+; *****************************************************************************
+_getmouse:
+        tax
+        jsr    $FF6B
+        rts
+
+; *****************************************************************************
+; Enable and show default mouse pointer
+; *****************************************************************************
+_enamouse:
+        sec
+        jsr     $FF5F           ; screen_mode
+        lda     #1
+        jmp     $FF68           ; mouse_config
 
 ; *****************************************************************************
 ; Introduce a breakpoint into the emulators debugger

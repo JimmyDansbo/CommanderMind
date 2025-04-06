@@ -14,6 +14,7 @@ extern void __fastcall__ breakpoint();
 extern char __fastcall__ vload(char *str, unsigned int addr, char bank);
 extern void __fastcall__ enamouse();
 extern u16  __fastcall__ getmouse(char zp);
+extern char __fastcall__ rndcircle();
 
 #define BLACK		0x00
 #define WHITE		0x01
@@ -167,6 +168,14 @@ struct _spriteattributes {
 	unsigned char palletteoffset;
 	unsigned char width;
 	unsigned char height;
+};
+
+struct _lineinfo {
+	unsigned char isDone;
+	unsigned char tiley;
+	unsigned char miny;
+	unsigned char maxy;
+	unsigned char fieldcolor[4];
 };
 
 #endif

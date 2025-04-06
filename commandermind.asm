@@ -6,6 +6,7 @@
 .export _vload
 .export _enamouse
 .export _getmouse
+.export _rndcircle
 
 .segment "CODE"
 ; ZeroPage variables/pointers
@@ -33,6 +34,47 @@ TMP_PTR4	= TMP8
 TMP_PTR5	= TMPa
 TMP_PTR6	= TMPc
 TMP_PTR7	= TMPe
+
+_rndcircle: .byte $db
+	jsr	$FECF		; entropy_get
+	eor	TMPf
+	stx	TMPf
+	eor	TMPf
+	sty	TMPf
+	eor	TMPf
+	sta	TMPf
+	lsr
+	lsr
+	lsr
+	lsr
+	eor	TMPf
+	and	#7
+	cmp	#0
+	beq	_rndcircle
+	cmp	#7
+	beq	_rndcircle
+	; Here we have a number between 1 and 6, both inclusive. Convert it to sprite index
+	ldx	#0
+	cmp	#6
+	bne	:+
+	lda	#21	;cyan circle
+	rts
+:	cmp	#5
+	bne	:+
+	lda	#17	;purple circle
+	rts
+:	cmp	#4
+	bne	:+
+	lda	#13	;green circle
+	rts
+:	cmp	#3
+	bne	:+
+	lda	#9
+	rts
+:	cmp	#2
+	bne	:+
+	lda	#5
+:	rts
 
 ; *****************************************************************************
 ; Get mouse state, coordinates as button presses

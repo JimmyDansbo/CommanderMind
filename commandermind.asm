@@ -35,7 +35,7 @@ TMP_PTR5	= TMPa
 TMP_PTR6	= TMPc
 TMP_PTR7	= TMPe
 
-_rndcircle: .byte $db
+_rndcircle:
 	jsr	$FECF		; entropy_get
 	eor	TMPf
 	stx	TMPf

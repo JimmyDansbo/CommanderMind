@@ -294,15 +294,200 @@ void pressedbutton() {
 	*(u8*)VERA_DATA0 = 72;
 }
 
+// Fill screen with see-through tiles = clear screen
+void clrscr() {
+	u8 x, y;
+
+	*(u8*)VERA_ADDR_H = 0x11;
+	*(u8*)VERA_ADDR_M = 0xB0;
+	*(u8*)VERA_ADDR_L = 0x00;
+	for (y=0;y<30;y++) {
+		for(x=0;x<40;x++) {
+			*(u8*)VERA_DATA0 = 26;
+			*(u8*)VERA_DATA0 = 0;
+		}
+		*(u8*)VERA_ADDR_L = 0x00;
+		*(u8*)VERA_ADDR_M = *(u8*)VERA_ADDR_M+1;
+	}
+}
+
+void showresult() {
+	*(u8*)VERA_ADDR_H = 0x21;
+	gotoxy(23, 18);
+	showcircle(combination[0]);
+	gotoxy(26, 18);
+	showcircle(combination[1]);
+	gotoxy(29, 18);
+	showcircle(combination[2]);
+	gotoxy(32, 18);
+	showcircle(combination[3]);
+}
+
+void box(u8 x, u8 y, u8 w, u8 h, u8 ch) {
+	u8 cntx, cnty;
+
+	*(u8*)VERA_ADDR_H = 0x21;
+	for (cnty=y;cnty<y+h;cnty++) {
+		gotoxy(x, cnty);
+		for (cntx=x;cntx<x+w;cntx++) {
+			*(u8*)VERA_DATA0 = ch;
+		}
+	}
+}
+
+void showwinner() {
+	box(23, 18, 11, 2, 26);
+	showresult();
+}
+
+void showloser() {
+	box(23, 18, 11, 2, 26);
+	showresult();
+}
+
 void considerguess() {
-	u8 cnt;
+	u8 cnt, f0used, f1used, f2used, f3used;
+	u8 resx, resy;
+	u8 fc[4];
 
+	for (cnt=0;cnt<10;cnt++) {
+		resx=13;
+		resy=0;
+		f0used=0; f1used=0; f2used=0; f3used=0;
+		if (lineinfo[cnt].isDone!=1) {
+			fc[0]=lineinfo[cnt].fieldcolor[0];
+			fc[1]=lineinfo[cnt].fieldcolor[1];
+			fc[2]=lineinfo[cnt].fieldcolor[2];
+			fc[3]=lineinfo[cnt].fieldcolor[3];
 
+			if ((fc[0]!=0) && (fc[1]!=0) && (fc[2]!=0) && (fc[3]!=0)) {
+				lineinfo[cnt].isDone=1;
+
+				if (fc[0]==combination[0]) {
+					gotoxy(resx, lineinfo[cnt].tiley+resy);
+					*(u8*)VERA_DATA0 = 1;
+					f0used=2;
+					if (resx==13) ++resx;
+					else {resx=13;++resy;}
+				}
+				if (fc[1]==combination[1]) {
+					gotoxy(resx, lineinfo[cnt].tiley+resy);
+					*(u8*)VERA_DATA0 = 1;
+					f1used=2;
+					if (resx==13) ++resx;
+					else {resx=13;++resy;}
+				}
+				if (fc[2]==combination[2]) {
+					gotoxy(resx, lineinfo[cnt].tiley+resy);
+					*(u8*)VERA_DATA0 = 1;
+					f2used=2;
+					if (resx==13) ++resx;
+					else {resx=13;++resy;}
+				}
+				if (fc[3]==combination[3]) {
+					gotoxy(resx, lineinfo[cnt].tiley+resy);
+					*(u8*)VERA_DATA0 = 1;
+					f3used=2;
+					if (resx==13) ++resx;
+					else {resx=13;++resy;}
+				}
+				if ((f0used==2) && (f1used==2) && (f2used==2) && (f3used==2)) break;
+
+				if (f0used!=2) {
+					if ((fc[0]==combination[1]) && (f1used==0)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+						if (resx==13) ++resx;
+						else {resx=13;++resy;}
+						f1used=1;
+					} else
+					if ((fc[0]==combination[2]) && (f2used==0)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+						if (resx==13) ++resx;
+						else {resx=13;++resy;}
+						f2used=1;
+					} else
+					if ((fc[0]==combination[3]) && (f1used==3)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+						if (resx==13) ++resx;
+						else {resx=13;++resy;}
+						f3used=1;
+					}
+				}
+				if (f1used!=2) {
+					if ((fc[1]==combination[0]) && (f0used==0)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+						if (resx==13) ++resx;
+						else {resx=13;++resy;}
+						f0used=1;
+					} else
+					if ((fc[1]==combination[2]) && (f2used==0)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+						if (resx==13) ++resx;
+						else {resx=13;++resy;}
+						f2used=1;
+					} else
+					if ((fc[1]==combination[3]) && (f3used==0)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+						if (resx==13) ++resx;
+						else {resx=13;++resy;}
+						f3used=1;
+					}
+				}
+				if (f2used!=2) {
+					if ((fc[2]==combination[0]) && (f0used==0)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+						if (resx==13) ++resx;
+						else {resx=13;++resy;}
+						f0used=1;
+					} else
+					if ((fc[2]==combination[1]) && (f1used==0)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+						if (resx==13) ++resx;
+						else {resx=13;++resy;}
+						f1used=1;
+					} else
+					if ((fc[2]==combination[3]) && (f3used==0)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+						if (resx==13) ++resx;
+						else {resx=13;++resy;}
+						f3used=1;
+					}
+				}
+				if (f3used!=2) {
+					if ((fc[3]==combination[0]) && (f0used==0)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+					} else
+					if ((fc[3]==combination[1]) && (f1used==0)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+					} else
+					if ((fc[3]==combination[2]) && (f2used==0)) {
+						gotoxy(resx, lineinfo[cnt].tiley+resy);
+						*(u8*)VERA_DATA0 = 0;
+					}
+				}
+			}
+
+		}
+	}
+	if ((f0used==2) && (f1used==2) && (f2used==2) && (f3used==2)) showwinner();
+	resx=0;
+	for (cnt=0;cnt<10;cnt++) if (lineinfo[cnt].isDone==0) resx=1;
+	if (resx==0) showloser();
 }
 
 int main() {
-	u16 x, y;
-	u8 cnt;
+	u8 cnt, btn;
 
 	*(u8*)VERA_DC_HSCALE = 0x40;
 	*(u8*)VERA_DC_VSCALE = 0x40;
@@ -310,7 +495,6 @@ int main() {
 	vload("bgimg.bin", 0x0000, 0);
 	vload("tiles.bin", 0x9800, 0);
 
-	*(u8*)VERA_DC_VIDEO = *(u8*)VERA_DC_VIDEO|0x10; //Enable Layer 0
 	*(u8*)VERA_L0_CONFIG = 0x06; //bitmap mode, 4bpp color
 	*(u8*)VERA_L0_TILEBASE = 0x00; //start address = 0
 
@@ -324,39 +508,39 @@ int main() {
 	// tile_base = address of tile data = 0x9600
 	*(u8*)VERA_L1_TILEBASE = 0x4C;
 
-	// Fill screen with see-through tiles = clear screen
-	*(u8*)VERA_ADDR_H = 0x11;
-	*(u8*)VERA_ADDR_M = 0xB0;
-	*(u8*)VERA_ADDR_L = 0x00;
-	for (y=0;y<30;y++) {
-		for(x=0;x<40;x++) {
-			*(u8*)VERA_DATA0 = 26;
-			*(u8*)VERA_DATA0 = 0;
-		}
-		*(u8*)VERA_ADDR_L = 0x00;
-		*(u8*)VERA_ADDR_M = *(u8*)VERA_ADDR_M+1;
-	}
+	clrscr();
 
 	combination[0]=rndcircle();
 	combination[1]=rndcircle();
 	combination[2]=rndcircle();
 	combination[3]=rndcircle();
 
+//	showresult();
+	box(23, 18, 11, 2, 27);
+
 	preplines();
 	//Configure sprites
 	configuresprites();
 	// Enable sprites
-	*(u8*)VERA_DC_VIDEO = *(u8*)VERA_DC_VIDEO|0x40; 
+	*(u8*)VERA_DC_VIDEO = *(u8*)VERA_DC_VIDEO|0x50; //Enable Layer 0 & Sprites
 
 	enamouse();
 
 	grayoutbutton();
 
 	while(1){
-		x = getmouse(TMP_PTR0);
+		btn = getmouse(TMP_PTR0);
 		mousex = *(u16*)TMP_PTR0;
 		mousey = *(u16*)TMP_PTR1;
-		if (x==1) {
+		if (btn==2) {
+			combination[0]=rndcircle();
+			combination[1]=rndcircle();
+			combination[2]=rndcircle();
+			combination[3]=rndcircle();
+		
+			showresult();		
+		}
+		if (btn==1) {
 			if (sprite>0) {
 				set_sprite_coord(sprite+0, mousex-8, mousey-8);
 				set_sprite_coord(sprite+1, mousex, mousey-8);

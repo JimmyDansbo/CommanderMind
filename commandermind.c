@@ -6,6 +6,10 @@
 u16 mousex=0;
 u16 mousey=0;
 u8 sprite=0;
+u8 btnpressed=0;
+u8 btnenabled=0;
+struct _lineinfo lineinfo[10];
+u8 combination[4];
 
 #define RED_CIRCLE	1
 #define YELLOW_CIRCLE	5
@@ -13,6 +17,41 @@ u8 sprite=0;
 #define GREEN_CIRCLE	13
 #define PURPLE_CIRCLE	17
 #define CYAN_CIRCLE	21
+
+#define FIELDMINX0 8
+#define FIELDMINX1 32
+#define FIELDMINX2 56
+#define FIELDMINX3 80
+#define FIELDMAXX0 23
+#define FIELDMAXX1 47
+#define FIELDMAXX2 71
+#define FIELDMAXX3 95
+
+#define FIELDTX0 1
+#define FIELDTX1 4
+#define FIELDTX2 7
+#define FIELDTX3 10
+
+void preplines() {
+	u8 cnt=0;
+	u8 tiley=1;
+	u8 miny = 8;
+	u8 maxy = miny+15;
+
+	for (cnt=0;cnt<10;cnt++) {
+		lineinfo[cnt].fieldcolor[0]=0;
+		lineinfo[cnt].fieldcolor[1]=0;
+		lineinfo[cnt].fieldcolor[2]=0;
+		lineinfo[cnt].fieldcolor[3]=0;
+		lineinfo[cnt].isDone=0;
+		lineinfo[cnt].tiley = tiley;
+		lineinfo[cnt].miny = miny;
+		lineinfo[cnt].maxy = maxy;
+		tiley+=3;
+		miny+=24;
+		maxy=miny+15;
+	}
+}
 
 void gotoxy(u8 x, u8 y) {
 	*(u8*)VERA_ADDR_H = *(u8*)VERA_ADDR_H|0x01;
@@ -133,60 +172,27 @@ void configuresprites(){
 	configSprite(24, &sa);
 }
 
-void showcolors() {
-	*(u8*)VERA_ADDR_H = 0x21;
-	// Show a red circle
-	gotoxy(20, 9);
-	*(u8*)VERA_DATA0 = 2;
-	*(u8*)VERA_DATA0 = 3;
-	gotoxy(20, 10);
-	*(u8*)VERA_DATA0 = 4;
-	*(u8*)VERA_DATA0 = 5;
-
-	// Show a yellow circle
-	gotoxy(23, 9);
-	*(u8*)VERA_DATA0 = 6;
-	*(u8*)VERA_DATA0 = 7;
-	gotoxy(23, 10);
-	*(u8*)VERA_DATA0 = 8;
-	*(u8*)VERA_DATA0 = 9;
-
-	// Show a blue circle
-	gotoxy(26, 9);
-	*(u8*)VERA_DATA0 = 10;
-	*(u8*)VERA_DATA0 = 11;
-	gotoxy(26, 10);
-	*(u8*)VERA_DATA0 = 12;
-	*(u8*)VERA_DATA0 = 13;
-
-	// Show a green circle
-	gotoxy(29, 9);
-	*(u8*)VERA_DATA0 = 14;
-	*(u8*)VERA_DATA0 = 15;
-	gotoxy(29, 10);
-	*(u8*)VERA_DATA0 = 16;
-	*(u8*)VERA_DATA0 = 17;
-
-	// Show a purple circle
-	gotoxy(32, 9);
-	*(u8*)VERA_DATA0 = 18;
-	*(u8*)VERA_DATA0 = 19;
-	gotoxy(32, 10);
-	*(u8*)VERA_DATA0 = 20;
-	*(u8*)VERA_DATA0 = 21;
-
-	// Show a Cyan circle
-	gotoxy(35, 9);
-	*(u8*)VERA_DATA0 = 22;
-	*(u8*)VERA_DATA0 = 23;
-	gotoxy(35, 10);
-	*(u8*)VERA_DATA0 = 24;
-	*(u8*)VERA_DATA0 = 25;
+void showcircle(u8 circle) {
+	switch (circle) {
+		case RED_CIRCLE:	circle=2;  break;
+		case YELLOW_CIRCLE:	circle=6;  break;
+		case BLUE_CIRCLE:	circle=10; break;
+		case GREEN_CIRCLE:	circle=14; break;
+		case PURPLE_CIRCLE:	circle=18; break;
+		case CYAN_CIRCLE:	circle=22; break;
+	}
+	*(u8*)VERA_DATA0 = circle;
+	*(u8*)VERA_DATA0 = ++circle;
+	*(u8*)VERA_ADDR_M = *(u8*)VERA_ADDR_M + 1;
+	*(u8*)VERA_ADDR_L = *(u8*)VERA_ADDR_L - 4;
+	*(u8*)VERA_DATA0 = ++circle;
+	*(u8*)VERA_DATA0 = ++circle;
 }
 
 void enablebutton() {
 	u8 cnt=0;
-	
+
+	btnenabled=1;
 	*(u8*)VERA_ADDR_H = 0x21;
 	gotoxy(20, 24);
 	for (cnt=0; cnt<6; cnt++)
@@ -203,6 +209,7 @@ void enablebutton() {
 }
 
 void grayoutbutton() {
+	btnenabled=0;
 	*(u8*)VERA_ADDR_H = 0x21;
 	gotoxy(20, 24);
 	*(u8*)VERA_DATA0 = 28;
@@ -260,8 +267,42 @@ void grayoutbutton() {
 	*(u8*)VERA_DATA0 = 72;
 }
 
+void pressedbutton() {
+	*(u8*)VERA_ADDR_H = 0x21;
+	gotoxy(20, 24);
+	*(u8*)VERA_DATA0 = 28;
+	gotoxy(20, 25);
+	*(u8*)VERA_DATA0 = 33;
+	gotoxy(20, 26);
+	*(u8*)VERA_DATA0 = 33;
+	gotoxy(20, 27);
+	*(u8*)VERA_DATA0 = 58;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 59;
+	*(u8*)VERA_DATA0 = 72;
+}
+
+void considerguess() {
+	u8 cnt;
+
+
+}
+
 int main() {
 	u16 x, y;
+	u8 cnt;
 
 	*(u8*)VERA_DC_HSCALE = 0x40;
 	*(u8*)VERA_DC_VSCALE = 0x40;
@@ -296,6 +337,12 @@ int main() {
 		*(u8*)VERA_ADDR_M = *(u8*)VERA_ADDR_M+1;
 	}
 
+	combination[0]=rndcircle();
+	combination[1]=rndcircle();
+	combination[2]=rndcircle();
+	combination[3]=rndcircle();
+
+	preplines();
 	//Configure sprites
 	configuresprites();
 	// Enable sprites
@@ -303,21 +350,20 @@ int main() {
 
 	enamouse();
 
-	showcolors();
 	grayoutbutton();
 
 	while(1){
 		x = getmouse(TMP_PTR0);
+		mousex = *(u16*)TMP_PTR0;
+		mousey = *(u16*)TMP_PTR1;
 		if (x==1) {
-			mousex = *(u16*)TMP_PTR0;
-			mousey = *(u16*)TMP_PTR1;
 			if (sprite>0) {
 				set_sprite_coord(sprite+0, mousex-8, mousey-8);
 				set_sprite_coord(sprite+1, mousex, mousey-8);
 				set_sprite_coord(sprite+2, mousex-8, mousey);
 				set_sprite_coord(sprite+3, mousex, mousey);
 			} else {
-				if (((mousey>=0x48) && (mousey<0x58))&&(sprite==0)) {
+				if ((mousey>=0x48) && (mousey<0x58)) {
 					if ((mousex>=0xA0) && (mousex<=0xAF))
 						sprite = RED_CIRCLE;
 					if ((mousex>=0xB8) && (mousex<=0xC7))
@@ -330,12 +376,67 @@ int main() {
 						sprite = PURPLE_CIRCLE;
 					if ((mousex>=0x118) && (mousex<=0x127))
 						sprite = CYAN_CIRCLE;
+				} else if ((mousey>=192) && (mousey<=224) &&
+					   (mousex>=160) && (mousex<=288) && (btnenabled==1)) {
+					pressedbutton();
+					btnpressed=1;
 				}
 
 			}
 		} else {
+			// If we are dragging a sprite and releasing the left mousebutton
 			if (sprite>0) {
+				for (cnt=0;cnt<10;cnt++) {
+					// If the line is not already guessed
+					if (lineinfo[cnt].isDone==0) {
+						// If the mousecursor is within Y coords of line
+						if ((mousey>=lineinfo[cnt].miny) &&
+						    (mousey<=lineinfo[cnt].maxy)) {
+							*(u8*)VERA_ADDR_H = 0x21;
+							if ((mousex>=FIELDMINX0) &&
+							    (mousex<=FIELDMAXX0)) {
+								lineinfo[cnt].fieldcolor[0]=sprite;
+								gotoxy(FIELDTX0, lineinfo[cnt].tiley);
+								showcircle(sprite);
+							} else
+							if ((mousex>=FIELDMINX1) &&
+							    (mousex<=FIELDMAXX1)) {
+								lineinfo[cnt].fieldcolor[1]=sprite;
+								gotoxy(FIELDTX1, lineinfo[cnt].tiley);
+								showcircle(sprite);
+							} else
+							if ((mousex>=FIELDMINX2) &&
+							    (mousex<=FIELDMAXX2)) {
+								lineinfo[cnt].fieldcolor[2]=sprite;
+								gotoxy(FIELDTX2, lineinfo[cnt].tiley);
+								showcircle(sprite);
+							} else
+							if ((mousex>=FIELDMINX3) &&
+							    (mousex<=FIELDMAXX3)) {
+								lineinfo[cnt].fieldcolor[3]=sprite;
+								gotoxy(FIELDTX3, lineinfo[cnt].tiley);
+								showcircle(sprite);
+							}
+							if ((lineinfo[cnt].fieldcolor[0]!=0) &&
+							    (lineinfo[cnt].fieldcolor[1]!=0) &&
+							    (lineinfo[cnt].fieldcolor[2]!=0) &&
+							    (lineinfo[cnt].fieldcolor[3]!=0))
+							    	enablebutton();
+						}
+					}
+				}
+				set_sprite_coord(sprite+0, 400, 0);
+				set_sprite_coord(sprite+1, 400, 0);
+				set_sprite_coord(sprite+2, 400, 0);
+				set_sprite_coord(sprite+3, 400, 0);
 				sprite=0;
+			}
+			// If we have depressed the button, we are now letting go
+			// and a guess should be considered <-- (TBD)
+			if (btnpressed==1) {
+				btnpressed=0;
+				grayoutbutton();
+				considerguess();
 			}
 		}
 	} 

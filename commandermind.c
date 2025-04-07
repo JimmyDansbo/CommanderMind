@@ -10,6 +10,7 @@ u8 btnpressed=0;
 u8 btnenabled=0;
 struct _lineinfo lineinfo[10];
 u8 combination[4];
+u8 exitgame=0;
 
 #define RED_CIRCLE	1
 #define YELLOW_CIRCLE	5
@@ -335,14 +336,104 @@ void box(u8 x, u8 y, u8 w, u8 h, u8 ch) {
 	}
 }
 
+void playagain() {
+	gotoxy(23, 13);
+	*(u8*)VERA_DATA0 = 82; // P
+	*(u8*)VERA_DATA0 = 79; // L
+	*(u8*)VERA_DATA0 = 75; // A
+	*(u8*)VERA_DATA0 = 87; // Y
+	*(u8*)VERA_DATA0 = 26; // [spc]
+	*(u8*)VERA_DATA0 = 75; // A
+	*(u8*)VERA_DATA0 = 77; // G
+	*(u8*)VERA_DATA0 = 75; // A
+	*(u8*)VERA_DATA0 = 78; // I
+	*(u8*)VERA_DATA0 = 80; // N
+	*(u8*)VERA_DATA0 = 74; // ?
+	gotoxy(25, 15);
+	*(u8*)VERA_DATA0 = 87; // Y
+	*(u8*)VERA_DATA0 = 76; // E
+	*(u8*)VERA_DATA0 = 83; // S
+	*(u8*)VERA_DATA0 = 26; // [spc]
+	*(u8*)VERA_DATA0 = 26; // [spc]
+	*(u8*)VERA_DATA0 = 80; // N
+	*(u8*)VERA_DATA0 = 81; // O
+}
+
+void youwon() {
+	gotoxy(24, 12);
+	*(u8*)VERA_ADDR_H = 0x21;
+	*(u8*)VERA_DATA0 = 87; // Y
+	*(u8*)VERA_DATA0 = 81; // O
+	*(u8*)VERA_DATA0 = 85; // U
+	*(u8*)VERA_DATA0 = 26; // [spc]
+	*(u8*)VERA_DATA0 = 86; // W
+	*(u8*)VERA_DATA0 = 81; // O
+	*(u8*)VERA_DATA0 = 80; // N
+	*(u8*)VERA_DATA0 = 73; // !
+	*(u8*)VERA_DATA0 = 73; // !
+	playagain();
+}
+
+void youlost() {
+	gotoxy(24, 12);
+	*(u8*)VERA_ADDR_H = 0x21;
+	*(u8*)VERA_DATA0 = 87; // Y
+	*(u8*)VERA_DATA0 = 81; // O
+	*(u8*)VERA_DATA0 = 85; // U
+	*(u8*)VERA_DATA0 = 26; // [spc]
+	*(u8*)VERA_DATA0 = 79; // L
+	*(u8*)VERA_DATA0 = 81; // O
+	*(u8*)VERA_DATA0 = 83; // S
+	*(u8*)VERA_DATA0 = 84; // T
+	*(u8*)VERA_DATA0 = 73; // !
+	playagain();
+}
+
+void initgame() {
+	clrscr();
+	preplines();
+	grayoutbutton();
+	combination[0]=rndcircle();
+	combination[1]=rndcircle();
+	combination[2]=rndcircle();
+	combination[3]=rndcircle();
+	box(23, 18, 11, 2, 27);
+}
+
+void getynclick() {
+	u8 exitloop=0;
+	u8 btn;
+
+	while (exitloop==0) {
+		btn = getmouse(TMP_PTR0);
+		mousex = *(u16*)TMP_PTR0;
+		mousey = *(u16*)TMP_PTR1;
+		if (btn==1) {
+			if ((mousey<=127) && (mousey>=120)) {
+				if ((mousex>=200) && (mousex<224)) { //YES button pressed
+					initgame();
+					exitloop=1;
+				} else
+				if ((mousex>=240) && (mousex<256)) { //NO button pressed
+					returntobasic();
+				}
+			}
+		}
+	}
+}
+
 void showwinner() {
 	box(23, 18, 11, 2, 26);
 	showresult();
+	youwon();
+	getynclick();
 }
 
 void showloser() {
 	box(23, 18, 11, 2, 26);
 	showresult();
+	youlost();
+	getynclick();
 }
 
 void considerguess() {
@@ -508,17 +599,6 @@ int main() {
 	// tile_base = address of tile data = 0x9600
 	*(u8*)VERA_L1_TILEBASE = 0x4C;
 
-	clrscr();
-
-	combination[0]=rndcircle();
-	combination[1]=rndcircle();
-	combination[2]=rndcircle();
-	combination[3]=rndcircle();
-
-//	showresult();
-	box(23, 18, 11, 2, 27);
-
-	preplines();
 	//Configure sprites
 	configuresprites();
 	// Enable sprites
@@ -526,9 +606,9 @@ int main() {
 
 	enamouse();
 
-	grayoutbutton();
+	initgame();
 
-	while(1){
+	while(exitgame==0){
 		btn = getmouse(TMP_PTR0);
 		mousex = *(u16*)TMP_PTR0;
 		mousey = *(u16*)TMP_PTR1;
@@ -625,5 +705,6 @@ int main() {
 		}
 	} 
 
+	returntobasic();
 	return (0);
 }

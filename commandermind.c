@@ -11,6 +11,8 @@ u8 btnenabled=0;
 struct _lineinfo lineinfo[10];
 u8 combination[4];
 u8 exitgame=0;
+u8 musicplaying=1;
+u8 btn2pressed=0;
 
 #define RED_CIRCLE	1
 #define YELLOW_CIRCLE	5
@@ -337,6 +339,7 @@ void box(u8 x, u8 y, u8 w, u8 h, u8 ch) {
 }
 
 void playagain() {
+	*(u8*)VERA_ADDR_H = 0x21;
 	gotoxy(23, 13);
 	*(u8*)VERA_DATA0 = 82; // P
 	*(u8*)VERA_DATA0 = 79; // L
@@ -585,6 +588,9 @@ int main() {
 
 	vload("bgimg.bin", 0x0000, 0);
 	vload("tiles.bin", 0x9800, 0);
+	bload("zsmkit-a000.bin", 0xA000, 1);
+	bload("music.zsm", 0xA000, 2);
+	initzsm();
 
 	*(u8*)VERA_L0_CONFIG = 0x06; //bitmap mode, 4bpp color
 	*(u8*)VERA_L0_TILEBASE = 0x00; //start address = 0
@@ -607,19 +613,28 @@ int main() {
 	enamouse();
 
 	initgame();
+	zsmplay(0);
 
 	while(exitgame==0){
 		btn = getmouse(TMP_PTR0);
 		mousex = *(u16*)TMP_PTR0;
 		mousey = *(u16*)TMP_PTR1;
+		if (btn==3) {
+			playagain();
+			getynclick();
+		} else
 		if (btn==2) {
-			combination[0]=rndcircle();
-			combination[1]=rndcircle();
-			combination[2]=rndcircle();
-			combination[3]=rndcircle();
-		
-			showresult();		
-		}
+			if (btn2pressed==0) {
+				btn2pressed=1;
+				if (musicplaying==0) {
+					zsmplay(0);
+					musicplaying=1;
+				} else {
+					zsmstop(0);
+					musicplaying=0;
+				}
+			}
+		} else
 		if (btn==1) {
 			if (sprite>0) {
 				set_sprite_coord(sprite+0, mousex-8, mousey-8);
@@ -648,6 +663,7 @@ int main() {
 
 			}
 		} else {
+			btn2pressed=0;
 			// If we are dragging a sprite and releasing the left mousebutton
 			if (sprite>0) {
 				for (cnt=0;cnt<10;cnt++) {

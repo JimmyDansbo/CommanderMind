@@ -8,6 +8,10 @@
 .export _getmouse
 .export _rndcircle
 .export _returntobasic
+.export _bload
+.export _initzsm
+.export _zsmplay
+.export _zsmstop
 
 .segment "CODE"
 ; ZeroPage variables/pointers
@@ -35,6 +39,43 @@ TMP_PTR4	= TMP8
 TMP_PTR5	= TMPa
 TMP_PTR6	= TMPc
 TMP_PTR7	= TMPe
+
+RAM_BANK	= $00
+ROM_BANK	= $01
+
+ZSM_INIT_ENGINE = $A000
+ZSM_SETISR	= $A054
+ZSM_SETBANK	= $A01B
+ZSM_SETMEM	= $A01E
+ZSM_PLAY	= $A006
+ZSM_STOP	= $A009
+
+_zsmplay:
+	tax
+	lda	#1
+	sta	RAM_BANK
+	jmp	ZSM_PLAY
+_zsmstop:
+	tax
+	lda	#1
+	sta	RAM_BANK
+	jmp	ZSM_STOP
+
+_initzsm:
+	ldx	#<$0400			; Memory used for ZSM trampoline ($0400)		
+	ldy	#>$0400
+	lda	#1			; Goto RAM BANK 1 for ZSM 
+	sta	RAM_BANK
+	jsr	ZSM_INIT_ENGINE
+	jsr	ZSM_SETISR
+	ldx	#0			; Priority (channel) 0
+	lda	#2			; File located in RAM BANK 2
+	jsr	ZSM_SETBANK
+	ldx	#0			; Priority
+	lda	#<$A000			; Memory start of song
+	ldy	#>$A000
+	jmp	ZSM_SETMEM
+
 
 _returntobasic:
 	ldx	#$42	; System Management Controller
@@ -144,6 +185,52 @@ vbase:=*-2
         ply                     ; Pull address to load to from stack
         plx
         pla                     ; 0=load, 1=verify, 2=VRAM,0xxxx, 3=VRAM,1xxxx
+        jsr     $FFD5           ; LOAD
+
+        ; 8bit return value must be returned as 16 bit so X and A zeroed
+        ldx     #0
+        lda     #0
+        ; Move carry bit into A
+        rol
+        ; Invert bit to make it compatible with C true/false
+        eor     #1
+        rts
+
+; *****************************************************************************
+; Load a headerless binary file into RAM at specified bank and address
+; *****************************************************************************
+_bload:
+        pha                     ; Save RAM bank on stack
+
+        jsr     popa            ; Get address and store it on stack
+        pha
+        jsr     popa
+        pha
+
+        lda     #1              ; File number, must be unique
+        ldx     #8              ; Device 8, local filesystem or SD card
+        ldy     #2              ; Secondary command 2 = headerless load
+        jsr     $FFBA           ; SETLFS
+
+        jsr     popa            ; Get and save low part of address to filename
+        sta     bbase
+        jsr     popa            ; Get and save high part of address to filenem
+        sta     bbase+1
+        ldx     #$FF            ; Find length of filename by searching for 0
+:       inx
+        lda     $FFFF,x         ; $FFFF will be replaced by address of string
+bbase:=*-2
+        bne     :-
+        txa                     ; Length of filename in A
+        ldx     bbase           ; Address of filename
+        ldy     bbase+1
+        jsr     $FFBD           ; SETNAM
+
+        ply                     ; Pull address to load to from stack
+        plx
+        pla			; Get RAM bank and set it
+	sta	RAM_BANK
+	lda	#0              ; 0=load, 1=verify, 2=VRAM,0xxxx, 3=VRAM,1xxxx
         jsr     $FFD5           ; LOAD
 
         ; 8bit return value must be returned as 16 bit so X and A zeroed

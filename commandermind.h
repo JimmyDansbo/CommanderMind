@@ -16,6 +16,10 @@ extern void __fastcall__ enamouse();
 extern u16  __fastcall__ getmouse(char zp);
 extern char __fastcall__ rndcircle();
 extern void __fastcall__ returntobasic();
+extern char __fastcall__ bload(char *str, unsigned int addr, char bank);
+extern void __fastcall__ initzsm();
+extern void __fastcall__ zsmplay(u8 priority);
+extern void __fastcall__ zsmstop(u8 priority);
 
 #define BLACK		0x00
 #define WHITE		0x01

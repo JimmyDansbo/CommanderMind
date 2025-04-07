@@ -7,6 +7,7 @@
 .export _enamouse
 .export _getmouse
 .export _rndcircle
+.export _returntobasic
 
 .segment "CODE"
 ; ZeroPage variables/pointers
@@ -35,8 +36,14 @@ TMP_PTR5	= TMPa
 TMP_PTR6	= TMPc
 TMP_PTR7	= TMPe
 
+_returntobasic:
+	ldx	#$42	; System Management Controller
+	ldy	#$02	; magic location for system reset
+	lda	#$00 	; magic value for system poweroff/reset
+	jmp	$FEC9	; reset the computer
+
 _rndcircle:
-	jsr	$FECF		; entropy_get
+	jsr	$FECF	; entropy_get
 	eor	TMPf
 	stx	TMPf
 	eor	TMPf

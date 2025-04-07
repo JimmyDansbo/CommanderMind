@@ -15,6 +15,7 @@ extern char __fastcall__ vload(char *str, unsigned int addr, char bank);
 extern void __fastcall__ enamouse();
 extern u16  __fastcall__ getmouse(char zp);
 extern char __fastcall__ rndcircle();
+extern void __fastcall__ returntobasic();
 
 #define BLACK		0x00
 #define WHITE		0x01

@@ -6,7 +6,7 @@ sudo mount -o uid=1000,loop,offset=1048576 sdcard.img sd
 echo "Deleting all files on card..."
 rm -rf sd/*
 echo "Copying files..."
-cp -rv COMMIND.PRG BGIMG.BIN TILES.BIN sd/
+cp -rv COMMIND.PRG BGIMG.BIN TILES.BIN MUSIC.ZSM ZSMKIT-A000.BIN sd/
 echo "Unmounting sdcard image"
 sudo umount sd
 echo "Deleting device for sdcard image"

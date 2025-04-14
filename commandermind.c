@@ -87,7 +87,49 @@ static void configSprite(char spriteID, struct _spriteattributes *sa) {
 	*(u8*)VERA_DATA0=sa->y;
 	*(u8*)VERA_DATA0=sa->y>>8;
 	*(u8*)VERA_DATA0=(sa->collisionmask<<4)|(sa->zdepth<<2)|(sa->vflip<<1)|(sa->hflip&0x01);
-	*(u8*)VERA_DATA0=(sa->height<<6)|(sa->width<<4)|(sa->palletteoffset&0x0F);
+	*(u8*)VERA_DATA0=(sa->height<<6)|(sa->width<<4)|(sa->paletteoffset&0x0F);
+
+	// Restore VERA address
+	*(u8*)VERA_ADDR_H=oldaddrhi;
+	*(u16*)VERA_ADDR=oldaddr;
+}
+
+void getspriteattribs(u8 spriteID, struct _spriteattributes *sa) {
+	u16 oldaddr;
+	u8 oldaddrhi, tmp;
+
+	// Save VERA addresses
+	oldaddr=*(u16*)VERA_ADDR;
+	oldaddrhi=*(u8*)VERA_ADDR_H;
+
+	// Set VERA address to start of spriteID
+	*(u16*)VERA_ADDR=0xFC00+(spriteID*8);
+	*(u8*)VERA_ADDR_H=0x11;
+
+	sa->address = *(u8*)VERA_DATA0;
+	tmp = *(u8*)VERA_DATA0;
+	sa->address += ((tmp&0x0F)<<8);
+	sa->address = sa->address<<5;
+	sa->mode = tmp>>7;
+
+	sa->x = *(u8*)VERA_DATA0;
+	tmp = *(u8*)VERA_DATA0&0x03;
+	sa->x += (tmp<<8);
+
+	sa->y = *(u8*)VERA_DATA0;
+	tmp = *(u8*)VERA_DATA0&0x03;
+	sa->y += (tmp<<8);
+
+	tmp = *(u8*)VERA_DATA0;
+	sa->hflip = tmp&0x01;
+	sa->vflip = (tmp&0x02)>>1;
+	sa->zdepth = (tmp&0x0C)>>2;
+	sa->collisionmask = (tmp&0xF0)>>4;
+	
+	tmp = *(u8*)VERA_DATA0;
+	sa->paletteoffset = (tmp&0x0F);
+	sa->width = (tmp&0x30)>>4;
+	sa->height = (tmp&0xC0)>>6;
 
 	// Restore VERA address
 	*(u8*)VERA_ADDR_H=oldaddrhi;
@@ -118,7 +160,7 @@ void configuresprites(){
 	sa.vflip		= 0;
 	sa.mode			= SPRITE_MODE_4BPP;
 	sa.zdepth		= 3;
-	sa.palletteoffset 	= 0;
+	sa.paletteoffset 	= 0;
 
 	sa.address		= 0x9840;
 	configSprite(1, &sa);
@@ -582,13 +624,38 @@ void considerguess() {
 
 int main() {
 	u8 cnt, btn;
+	struct _spriteattributes sa;
 
 	*(u8*)VERA_DC_HSCALE = 0x40;
 	*(u8*)VERA_DC_VSCALE = 0x40;
 
+	// Enable mouse (copying sprite data to VERA address 0x13000)
+	enamouse();
+	// Set the palette entry for the splash image
 	setsplashpal();
 
-	vload("splash.bin", 0x0000, 0);
+	// Copy mouse pointer from default VERA position 0x13000 to 0x0A300
+	*(u8*)VERA_ADDR_H = 0x11;
+	*(u16*)VERA_ADDR = 0x3000;
+	*(u8*)VERA_CTRL = 1;
+	*(u8*)VERA_ADDR_H = 0x10;
+	*(u16*)VERA_ADDR = 0xA300;
+
+	for (cnt=0;cnt<256;cnt++)
+		*(u8*)VERA_DATA1 = *(u8*)VERA_DATA0;
+	*(u8*)VERA_DATA1 = *(u8*)VERA_DATA0;
+
+	*(u8*)VERA_CTRL = 0;
+
+	// Change mouse sprite to point to data at address 0x0A300
+	getspriteattribs(0, &sa);
+	sa.address = 0xA300;
+	sa.address_hi = 0x00;
+	configSprite(0, &sa);
+
+	// Load assets to memory
+	vload("bgimg.bin", 0x0000, 0);
+	vload("splash.bin", 0x0000, 1);
 	vload("tiles.bin", 0x9800, 0);
 	bload("zsmkit-a000.bin", 0xA000, 1);
 	bload("music.zsm", 0xA000, 2);
@@ -611,15 +678,16 @@ int main() {
 	//Configure sprites
 	configuresprites();
 
+	// Clear screen to ensure that splash image is shown correctly
 	clrscr();
 	
 	// Enable Layer 0 & sprites
 	*(u8*)VERA_DC_VIDEO = *(u8*)VERA_DC_VIDEO|0x50;
 
-	enamouse();
-
+	// Start playing the music
 	zsmplay(0);
 
+	// Wait for the user to start the game and let them toggle the music
 	while ((btn=getmouse(TMP_PTR0))!=1) {
 		if (btn==2) {
 			if (btn2pressed==0) {
@@ -635,19 +703,28 @@ int main() {
 		} else btn2pressed=0;
 	}
 
+	// Reset L0 settings to point to the background image instead of splash image
 	*(u8*)VERA_L0_HSCROLL_H = 0; // Reset palette back to default
-	vload("bgimg.bin", 0x0000, 0);
+	*(u8*)VERA_L0_TILEBASE = 0;
+
+	//Initialize the game
 	initgame();
 
 	while(1){
+		// Get mouse information and store it in "normal" variables
 		btn = getmouse(TMP_PTR0);
 		mousex = *(u16*)TMP_PTR0;
 		mousey = *(u16*)TMP_PTR1;
+
+		// If Both right and left mousebutton is pressed
 		if (btn==3) {
+			// Ask the user if they want to play again or end the game
 			playagain();
 			getynclick();
 		} else
+		// If right mousebutton is pressed
 		if (btn==2) {
+			// toggle the playback of the music
 			if (btn2pressed==0) {
 				btn2pressed=1;
 				if (musicplaying==0) {
@@ -659,13 +736,18 @@ int main() {
 				}
 			}
 		} else
+		// If left mousebutton is pressed
 		if (btn==1) {
+			// If a sprite is chosen, update it's coordinates according to the
+			// mousepointer coordinates
 			if (sprite>0) {
 				set_sprite_coord(sprite+0, mousex-8, mousey-8);
 				set_sprite_coord(sprite+1, mousex, mousey-8);
 				set_sprite_coord(sprite+2, mousex-8, mousey);
 				set_sprite_coord(sprite+3, mousex, mousey);
+			// If a sprite is not chosen
 			} else {
+				// Check if pointer is within areas of colored pieces
 				if ((mousey>=0x48) && (mousey<0x58)) {
 					if ((mousex>=0xA0) && (mousex<=0xAF))
 						sprite = RED_CIRCLE;
@@ -679,6 +761,7 @@ int main() {
 						sprite = PURPLE_CIRCLE;
 					if ((mousex>=0x118) && (mousex<=0x127))
 						sprite = CYAN_CIRCLE;
+				// Check if pointer is inside the "guess" button
 				} else if ((mousey>=192) && (mousey<=224) &&
 					   (mousex>=160) && (mousex<=288) && (btnenabled==1)) {
 					pressedbutton();
@@ -686,6 +769,7 @@ int main() {
 				}
 
 			}
+		// If neither right, left or both buttons are pressed on the mouse
 		} else {
 			btn2pressed=0;
 			// If we are dragging a sprite and releasing the left mousebutton
@@ -729,6 +813,7 @@ int main() {
 						}
 					}
 				}
+				// Hide sprite
 				set_sprite_coord(sprite+0, 400, 0);
 				set_sprite_coord(sprite+1, 400, 0);
 				set_sprite_coord(sprite+2, 400, 0);

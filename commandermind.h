@@ -170,7 +170,7 @@ struct _spriteattributes {
 	unsigned char hflip;
 	unsigned char zdepth;
 	unsigned char collisionmask;
-	unsigned char palletteoffset;
+	unsigned char paletteoffset;
 	unsigned char width;
 	unsigned char height;
 };

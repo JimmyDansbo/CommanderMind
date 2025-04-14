@@ -61,6 +61,7 @@ _zsmstop:
 	sta	RAM_BANK
 	jmp	ZSM_STOP
 
+
 _initzsm:
 	ldx	#<$0400			; Memory used for ZSM trampoline ($0400)		
 	ldy	#>$0400

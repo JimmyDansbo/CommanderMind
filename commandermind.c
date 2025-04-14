@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "commandermind.h"
+#include "splashpalette.h"
 
 u16 mousex=0;
 u16 mousey=0;
@@ -102,7 +103,7 @@ void set_sprite_coord(u8 spriteid, u16 x, u16 y){
 	*(u8*)VERA_DATA0=x>>8;
 	*(u8*)VERA_DATA0=y;
 	*(u8*)VERA_DATA0=y>>8;
-}  
+}
 
 void configuresprites(){
 	struct _spriteattributes sa;
@@ -137,7 +138,7 @@ void configuresprites(){
 	configSprite(7, &sa);
 	sa.address		= 0x9920;
 	configSprite(8, &sa);
-	
+
 	sa.address		= 0x9940;
 	configSprite(9, &sa);
 	sa.address		= 0x9960;
@@ -586,14 +587,17 @@ int main() {
 	*(u8*)VERA_DC_HSCALE = 0x40;
 	*(u8*)VERA_DC_VSCALE = 0x40;
 
-	vload("bgimg.bin", 0x0000, 0);
+	setsplashpal();
+
+	vload("splash.bin", 0x0000, 0);
 	vload("tiles.bin", 0x9800, 0);
 	bload("zsmkit-a000.bin", 0xA000, 1);
 	bload("music.zsm", 0xA000, 2);
 	initzsm();
 
 	*(u8*)VERA_L0_CONFIG = 0x06; //bitmap mode, 4bpp color
-	*(u8*)VERA_L0_TILEBASE = 0x00; //start address = 0
+	*(u8*)VERA_L0_TILEBASE = SPLASH_BASE;
+	*(u8*)VERA_L0_HSCROLL_H = SPLASH_PAL_OFFSET;
 
 	// map height = 0 = 32 tiles
 	// map width = 2 = 128 tiles
@@ -607,13 +611,20 @@ int main() {
 
 	//Configure sprites
 	configuresprites();
-	// Enable sprites
-	*(u8*)VERA_DC_VIDEO = *(u8*)VERA_DC_VIDEO|0x50; //Enable Layer 0 & Sprites
+
+	clrscr();
+	
+	// Enable Layer 0 & sprites
+	*(u8*)VERA_DC_VIDEO = *(u8*)VERA_DC_VIDEO|0x50;
 
 	enamouse();
 
-	initgame();
 	zsmplay(0);
+	__asm__("jsr $FFCF");
+
+	*(u8*)VERA_L0_HSCROLL_H = 0; // Reset palette back to default
+	vload("bgimg.bin", 0x0000, 0);
+	initgame();
 
 	while(exitgame==0){
 		btn = getmouse(TMP_PTR0);

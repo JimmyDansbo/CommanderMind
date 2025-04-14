@@ -11,7 +11,6 @@ u8 btnpressed=0;
 u8 btnenabled=0;
 struct _lineinfo lineinfo[10];
 u8 combination[4];
-u8 exitgame=0;
 u8 musicplaying=1;
 u8 btn2pressed=0;
 
@@ -620,13 +619,27 @@ int main() {
 	enamouse();
 
 	zsmplay(0);
-	__asm__("jsr $FFCF");
+
+	while ((btn=getmouse(TMP_PTR0))!=1) {
+		if (btn==2) {
+			if (btn2pressed==0) {
+				btn2pressed=1;
+				if (musicplaying==0) {
+					zsmplay(0);
+					musicplaying=1;
+				} else {
+					zsmstop(0);
+					musicplaying=0;
+				}
+			}
+		} else btn2pressed=0;
+	}
 
 	*(u8*)VERA_L0_HSCROLL_H = 0; // Reset palette back to default
 	vload("bgimg.bin", 0x0000, 0);
 	initgame();
 
-	while(exitgame==0){
+	while(1){
 		btn = getmouse(TMP_PTR0);
 		mousex = *(u16*)TMP_PTR0;
 		mousey = *(u16*)TMP_PTR1;

@@ -137,8 +137,8 @@ _getmouse:
 ; Enable and show default mouse pointer
 ; *****************************************************************************
 _enamouse:
-        sec
-        jsr     $FF5F           ; screen_mode
+	ldx	#40		; Screen resolution 40x30
+	ldy	#30
         lda     #1
         jmp     $FF68           ; mouse_config
 

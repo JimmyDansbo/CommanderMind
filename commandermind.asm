@@ -50,18 +50,27 @@ ZSM_SETMEM	= $A01E
 ZSM_PLAY	= $A006
 ZSM_STOP	= $A009
 
+; *****************************************************************************
+; Tell the ZSM kit to start playing music
+; *****************************************************************************
 _zsmplay:
 	tax
 	lda	#1
 	sta	RAM_BANK
 	jmp	ZSM_PLAY
+
+; *****************************************************************************
+; Tell the ZSM kit to stop playing music
+; *****************************************************************************
 _zsmstop:
 	tax
 	lda	#1
 	sta	RAM_BANK
 	jmp	ZSM_STOP
 
-
+; *****************************************************************************
+; Initialize the ZSM kit
+; *****************************************************************************
 _initzsm:
 	ldx	#<$0400			; Memory used for ZSM trampoline ($0400)		
 	ldy	#>$0400
@@ -77,13 +86,19 @@ _initzsm:
 	ldy	#>$A000
 	jmp	ZSM_SETMEM
 
-
+; *****************************************************************************
+; Use the SMC to reset the system
+; *****************************************************************************
 _returntobasic:
 	ldx	#$42	; System Management Controller
 	ldy	#$02	; magic location for system reset
 	lda	#$00 	; magic value for system poweroff/reset
 	jmp	$FEC9	; reset the computer
 
+; *****************************************************************************
+; Find a random number between 1 and 6 and convert it to the index of a sprite
+; Essentially returning a random sprite index
+; *****************************************************************************
 _rndcircle:
 	jsr	$FECF	; entropy_get
 	eor	TMPf

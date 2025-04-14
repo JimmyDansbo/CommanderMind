@@ -35,6 +35,10 @@ u8 btn2pressed=0;
 #define FIELDTX2 7
 #define FIELDTX3 10
 
+/******************************************************************************
+ Ensure the 10x4 positions on the playing field are reset and ready for the
+ user to place pieces and guess at the coe
+******************************************************************************/
 void preplines() {
 	u8 cnt=0;
 	u8 tiley=1;
@@ -56,6 +60,9 @@ void preplines() {
 	}
 }
 
+/******************************************************************************
+ Set VERA Address according to the coordinates provided to the function
+ ******************************************************************************/
 void gotoxy(u8 x, u8 y) {
 	*(u8*)VERA_ADDR_H = *(u8*)VERA_ADDR_H|0x01;
 	*(u8*)VERA_ADDR_M = 0xB0+y;
@@ -94,6 +101,11 @@ static void configSprite(char spriteID, struct _spriteattributes *sa) {
 	*(u16*)VERA_ADDR=oldaddr;
 }
 
+/******************************************************************************
+ Get sprite attributes from VRAM
+ The function ensure to set the correct VERA address and then reads the
+ sprite information into the spriteattributes struct.
+******************************************************************************/
 void getspriteattribs(u8 spriteID, struct _spriteattributes *sa) {
 	u16 oldaddr;
 	u8 oldaddrhi, tmp;
@@ -136,6 +148,9 @@ void getspriteattribs(u8 spriteID, struct _spriteattributes *sa) {
 	*(u16*)VERA_ADDR=oldaddr;
 }
 
+/******************************************************************************
+ Move a sprite to the specified coordinates
+******************************************************************************/
 void set_sprite_coord(u8 spriteid, u16 x, u16 y){
 	// Set VERA address to offset 2 of Sprite ID = X coordinate
 	*(u16*)VERA_ADDR=(0xFC00+(spriteid*8))+2;
@@ -146,6 +161,9 @@ void set_sprite_coord(u8 spriteid, u16 x, u16 y){
 	*(u8*)VERA_DATA0=y>>8;
 }
 
+/******************************************************************************
+ Configure the sprites used in the game
+******************************************************************************/
 void configuresprites(){
 	struct _spriteattributes sa;
 
@@ -162,6 +180,8 @@ void configuresprites(){
 	sa.zdepth		= 3;
 	sa.paletteoffset 	= 0;
 
+	// The sprites are the same as some of the tiles used
+	// so the only thin changed is the address of the sprite image data
 	sa.address		= 0x9840;
 	configSprite(1, &sa);
 	sa.address		= 0x9860;
@@ -217,6 +237,9 @@ void configuresprites(){
 	configSprite(24, &sa);
 }
 
+/******************************************************************************
+ Place a circle on layer 1. A circle consists of 4 tiles
+******************************************************************************/
 void showcircle(u8 circle) {
 	switch (circle) {
 		case RED_CIRCLE:	circle=2;  break;
@@ -226,14 +249,22 @@ void showcircle(u8 circle) {
 		case PURPLE_CIRCLE:	circle=18; break;
 		case CYAN_CIRCLE:	circle=22; break;
 	}
+	// Upper left part of circle
 	*(u8*)VERA_DATA0 = circle;
+	// Upper right part of circle
 	*(u8*)VERA_DATA0 = ++circle;
+	// Change VERA address to go down 1 line and left
 	*(u8*)VERA_ADDR_M = *(u8*)VERA_ADDR_M + 1;
 	*(u8*)VERA_ADDR_L = *(u8*)VERA_ADDR_L - 4;
+	// Lower left part of the circle
 	*(u8*)VERA_DATA0 = ++circle;
+	// Lower right part of the circle
 	*(u8*)VERA_DATA0 = ++circle;
 }
 
+/******************************************************************************
+ Show tiles on Layer 1 that makes the buttn look enabled (blank tiles)
+******************************************************************************/
 void enablebutton() {
 	u8 cnt=0;
 
@@ -253,6 +284,9 @@ void enablebutton() {
 		*(u8*)VERA_DATA0 = 26;
 }
 
+/******************************************************************************
+ Show tiles on Layer 1 that makes the button look disabled
+******************************************************************************/
 void grayoutbutton() {
 	btnenabled=0;
 	*(u8*)VERA_ADDR_H = 0x21;
@@ -312,6 +346,9 @@ void grayoutbutton() {
 	*(u8*)VERA_DATA0 = 72;
 }
 
+/******************************************************************************
+ Show tiles on Layer 1 that makes the button look pressed down
+******************************************************************************/
 void pressedbutton() {
 	*(u8*)VERA_ADDR_H = 0x21;
 	gotoxy(20, 24);
@@ -339,7 +376,9 @@ void pressedbutton() {
 	*(u8*)VERA_DATA0 = 72;
 }
 
-// Fill screen with see-through tiles = clear screen
+/******************************************************************************
+ Fill Layer 1 with see-through tiles = clear screen
+******************************************************************************/
 void clrscr() {
 	u8 x, y;
 
@@ -356,6 +395,9 @@ void clrscr() {
 	}
 }
 
+/******************************************************************************
+ Show the secret code that the computer had made up
+******************************************************************************/
 void showresult() {
 	*(u8*)VERA_ADDR_H = 0x21;
 	gotoxy(23, 18);
@@ -368,6 +410,9 @@ void showresult() {
 	showcircle(combination[3]);
 }
 
+/******************************************************************************
+ Create a rectangle of tiles on Layer 1
+******************************************************************************/
 void box(u8 x, u8 y, u8 w, u8 h, u8 ch) {
 	u8 cntx, cnty;
 
@@ -380,6 +425,10 @@ void box(u8 x, u8 y, u8 w, u8 h, u8 ch) {
 	}
 }
 
+/******************************************************************************
+ Show text on the screen, asking the user to play again and presenting the
+ Yes and No options
+******************************************************************************/
 void playagain() {
 	*(u8*)VERA_ADDR_H = 0x21;
 	gotoxy(23, 13);
@@ -404,6 +453,9 @@ void playagain() {
 	*(u8*)VERA_DATA0 = 81; // O
 }
 
+/******************************************************************************
+ Show text indicating the the user won the game
+******************************************************************************/
 void youwon() {
 	gotoxy(24, 12);
 	*(u8*)VERA_ADDR_H = 0x21;
@@ -419,6 +471,9 @@ void youwon() {
 	playagain();
 }
 
+/******************************************************************************
+ Show text indicating the the user lost the game
+******************************************************************************/
 void youlost() {
 	gotoxy(24, 12);
 	*(u8*)VERA_ADDR_H = 0x21;
@@ -434,6 +489,9 @@ void youlost() {
 	playagain();
 }
 
+/******************************************************************************
+ Initialize the game, variables and onscreen assets
+******************************************************************************/
 void initgame() {
 	clrscr();
 	preplines();
@@ -445,20 +503,28 @@ void initgame() {
 	box(23, 18, 11, 2, 27);
 }
 
+/******************************************************************************
+ Wait for the user to press the Yes or the No text
+******************************************************************************/
 void getynclick() {
 	u8 exitloop=0;
 	u8 btn;
 
 	while (exitloop==0) {
+		// Get mouse information into normal variables
 		btn = getmouse(TMP_PTR0);
 		mousex = *(u16*)TMP_PTR0;
 		mousey = *(u16*)TMP_PTR1;
+		// If left mousebutton pressed
 		if (btn==1) {
+			// If the mouse is within the horizontal coordinates of the text
 			if ((mousey<=127) && (mousey>=120)) {
+				// If mouse is within the vertical coordinates of Yes text
 				if ((mousex>=200) && (mousex<224)) { //YES button pressed
 					initgame();
 					exitloop=1;
 				} else
+				// If mouse is within the vertical coordinates of No text
 				if ((mousex>=240) && (mousex<256)) { //NO button pressed
 					returntobasic();
 				}
@@ -467,6 +533,9 @@ void getynclick() {
 	}
 }
 
+/******************************************************************************
+ Show the result and tell the user that they have won the game
+******************************************************************************/
 void showwinner() {
 	box(23, 18, 11, 2, 26);
 	showresult();
@@ -474,6 +543,9 @@ void showwinner() {
 	getynclick();
 }
 
+/******************************************************************************
+ Show the result and tell the user that they have lost the game
+******************************************************************************/
 void showloser() {
 	box(23, 18, 11, 2, 26);
 	showresult();
@@ -481,22 +553,30 @@ void showloser() {
 	getynclick();
 }
 
+/******************************************************************************
+ Check through all lines that have not already been checked and see if they
+ have correct color and or placements and show the result to the user
+******************************************************************************/
 void considerguess() {
 	u8 cnt, f0used, f1used, f2used, f3used;
 	u8 resx, resy;
 	u8 fc[4];
 
+	// Count though all 10 lines
 	for (cnt=0;cnt<10;cnt++) {
 		resx=13;
 		resy=0;
 		f0used=0; f1used=0; f2used=0; f3used=0;
+		// If the current line has not already been checked
 		if (lineinfo[cnt].isDone!=1) {
 			fc[0]=lineinfo[cnt].fieldcolor[0];
 			fc[1]=lineinfo[cnt].fieldcolor[1];
 			fc[2]=lineinfo[cnt].fieldcolor[2];
 			fc[3]=lineinfo[cnt].fieldcolor[3];
 
+			// If all fields in the line has pieces placed
 			if ((fc[0]!=0) && (fc[1]!=0) && (fc[2]!=0) && (fc[3]!=0)) {
+				// Indicate that the line is done
 				lineinfo[cnt].isDone=1;
 
 				if (fc[0]==combination[0]) {
@@ -527,8 +607,11 @@ void considerguess() {
 					if (resx==13) ++resx;
 					else {resx=13;++resy;}
 				}
+				// If we have found all 4 colors correctly placed, end the loop
 				if ((f0used==2) && (f1used==2) && (f2used==2) && (f3used==2)) break;
 
+				// Figure out if there are correct colors that are not placed at
+				// the correct spot
 				if (f0used!=2) {
 					if ((fc[0]==combination[1]) && (f1used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
@@ -616,15 +699,23 @@ void considerguess() {
 
 		}
 	}
+	// If there are 4 correct colors at the correct places, the game is won
 	if ((f0used==2) && (f1used==2) && (f2used==2) && (f3used==2)) showwinner();
-	resx=0;
+	resx=0; // Reuse variable to see if game is lost
+	// Search through all 10 lines to see if they are all done
 	for (cnt=0;cnt<10;cnt++) if (lineinfo[cnt].isDone==0) resx=1;
+	// If all lines are done, the game is lost
 	if (resx==0) showloser();
 }
 
+/******************************************************************************
+ Entry point to the program
+******************************************************************************/
 int main() {
 	u8 cnt, btn;
 	struct _spriteattributes sa;
+
+	printf("loading assets...");
 
 	*(u8*)VERA_DC_HSCALE = 0x40;
 	*(u8*)VERA_DC_VSCALE = 0x40;
@@ -641,7 +732,7 @@ int main() {
 	*(u8*)VERA_ADDR_H = 0x10;
 	*(u16*)VERA_ADDR = 0xA300;
 
-	for (cnt=0;cnt<256;cnt++)
+	for (cnt=0;cnt<255;cnt++)
 		*(u8*)VERA_DATA1 = *(u8*)VERA_DATA0;
 	*(u8*)VERA_DATA1 = *(u8*)VERA_DATA0;
 

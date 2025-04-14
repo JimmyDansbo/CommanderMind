@@ -1,13 +1,14 @@
 #!/bin/bash
 if [ "$1" = "" ]; then SDCARD="sdcard.img"; else SDCARD="$1"; fi
-echo "Mounting sdcard image"
-mkdir sd
-sudo mount -o uid=1000,loop,offset=1048576 sdcard.img sd
-echo "Deleting all files on card..."
-rm -rf sd/*
+echo "Removing and creating new sdcard image file"
+rm $SDCARD
+truncate -s 34M $SDCARD
+echo "Creating partition and formatting to FAT32"
+parted -s $SDCARD mklabel msdos mkpart primary fat32 2038s -- -1
+mformat -i $SDCARD@@1M -F
 echo "Copying files..."
-cp -rv COMMIND.PRG BGIMG.BIN TILES.BIN MUSIC.ZSM ZSMKIT-A000.BIN sd/
-echo "Unmounting sdcard image"
-sudo umount sd
-echo "Deleting device for sdcard image"
-rm -r sd
+mcopy -i $SDCARD@@1M -o -m COMMIND.PRG ::
+mcopy -i $SDCARD@@1M -o -m BGIMG.BIN ::
+mcopy -i $SDCARD@@1M -o -m TILES.BIN ::
+mcopy -i $SDCARD@@1M -o -m MUSIC.ZSM ::
+mcopy -i $SDCARD@@1M -o -m ZSMKIT-A000.BIN ::

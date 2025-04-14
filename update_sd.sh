@@ -9,6 +9,7 @@ mformat -i $SDCARD@@1M -F
 echo "Copying files..."
 mcopy -i $SDCARD@@1M -o -m COMMIND.PRG ::
 mcopy -i $SDCARD@@1M -o -m BGIMG.BIN ::
+mcopy -i $SDCARD@@1M -o -m SPLASH.BIN ::
 mcopy -i $SDCARD@@1M -o -m TILES.BIN ::
 mcopy -i $SDCARD@@1M -o -m MUSIC.ZSM ::
 mcopy -i $SDCARD@@1M -o -m ZSMKIT-A000.BIN ::

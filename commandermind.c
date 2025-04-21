@@ -529,7 +529,18 @@ void getynclick() {
 					returntobasic();
 				}
 			}
-		}
+		} else if (btn==2) {
+			if (btn2pressed==0) {
+				btn2pressed=1;
+				if (musicplaying==0) {
+					zsmplay(0);
+					musicplaying=1;
+				} else {
+					zsmstop(0);
+					musicplaying=0;
+				}
+			}
+		} else btn2pressed=0;
 	}
 }
 

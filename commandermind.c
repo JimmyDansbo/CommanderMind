@@ -64,9 +64,9 @@ void preplines() {
  Set VERA Address according to the coordinates provided to the function
  ******************************************************************************/
 void gotoxy(u8 x, u8 y) {
-	*(u8*)VERA_ADDR_H = *(u8*)VERA_ADDR_H|0x01;
-	*(u8*)VERA_ADDR_M = 0xB0+y;
-	*(u8*)VERA_ADDR_L = x*2;
+	VERA_ADDR_H = VERA_ADDR_H|0x01;
+	VERA_ADDR_M = 0xB0+y;
+	VERA_ADDR_L = x*2;
 }
 
 /******************************************************************************
@@ -80,25 +80,25 @@ static void configSprite(char spriteID, struct _spriteattributes *sa) {
 	u8 oldaddrhi;
 
 	// Save VERA addresses
-	oldaddr=*(u16*)VERA_ADDR;
-	oldaddrhi=*(u8*)VERA_ADDR_H;
+	oldaddr=VERA_ADDR;
+	oldaddrhi=VERA_ADDR_H;
 
 	// Set VERA address to start of spriteID
-	*(u16*)VERA_ADDR=0xFC00+(spriteID*8);
-	*(u8*)VERA_ADDR_H=0x11;
+	VERA_ADDR=0xFC00+(spriteID*8);
+	VERA_ADDR_H=0x11;
 
-	*(u8*)VERA_DATA0=sa->address>>5;
-	*(u8*)VERA_DATA0=(sa->mode<<7)|(sa->address_hi<<3)|(sa->address>>13);
-	*(u8*)VERA_DATA0=sa->x;
-	*(u8*)VERA_DATA0=sa->x>>8;
-	*(u8*)VERA_DATA0=sa->y;
-	*(u8*)VERA_DATA0=sa->y>>8;
-	*(u8*)VERA_DATA0=(sa->collisionmask<<4)|(sa->zdepth<<2)|(sa->vflip<<1)|(sa->hflip&0x01);
-	*(u8*)VERA_DATA0=(sa->height<<6)|(sa->width<<4)|(sa->paletteoffset&0x0F);
+	VERA_DATA0=sa->address>>5;
+	VERA_DATA0=(sa->mode<<7)|(sa->address_hi<<3)|(sa->address>>13);
+	VERA_DATA0=sa->x;
+	VERA_DATA0=sa->x>>8;
+	VERA_DATA0=sa->y;
+	VERA_DATA0=sa->y>>8;
+	VERA_DATA0=(sa->collisionmask<<4)|(sa->zdepth<<2)|(sa->vflip<<1)|(sa->hflip&0x01);
+	VERA_DATA0=(sa->height<<6)|(sa->width<<4)|(sa->paletteoffset&0x0F);
 
 	// Restore VERA address
-	*(u8*)VERA_ADDR_H=oldaddrhi;
-	*(u16*)VERA_ADDR=oldaddr;
+	VERA_ADDR_H=oldaddrhi;
+	VERA_ADDR=oldaddr;
 }
 
 /******************************************************************************
@@ -111,41 +111,41 @@ void getspriteattribs(u8 spriteID, struct _spriteattributes *sa) {
 	u8 oldaddrhi, tmp;
 
 	// Save VERA addresses
-	oldaddr=*(u16*)VERA_ADDR;
-	oldaddrhi=*(u8*)VERA_ADDR_H;
+	oldaddr=VERA_ADDR;
+	oldaddrhi=VERA_ADDR_H;
 
 	// Set VERA address to start of spriteID
-	*(u16*)VERA_ADDR=0xFC00+(spriteID*8);
-	*(u8*)VERA_ADDR_H=0x11;
+	VERA_ADDR=0xFC00+(spriteID*8);
+	VERA_ADDR_H=0x11;
 
-	sa->address = *(u8*)VERA_DATA0;
-	tmp = *(u8*)VERA_DATA0;
+	sa->address = VERA_DATA0;
+	tmp = VERA_DATA0;
 	sa->address += ((tmp&0x0F)<<8);
 	sa->address = sa->address<<5;
 	sa->mode = tmp>>7;
 
-	sa->x = *(u8*)VERA_DATA0;
-	tmp = *(u8*)VERA_DATA0&0x03;
+	sa->x = VERA_DATA0;
+	tmp = VERA_DATA0&0x03;
 	sa->x += (tmp<<8);
 
-	sa->y = *(u8*)VERA_DATA0;
-	tmp = *(u8*)VERA_DATA0&0x03;
+	sa->y = VERA_DATA0;
+	tmp = VERA_DATA0&0x03;
 	sa->y += (tmp<<8);
 
-	tmp = *(u8*)VERA_DATA0;
+	tmp = VERA_DATA0;
 	sa->hflip = tmp&0x01;
 	sa->vflip = (tmp&0x02)>>1;
 	sa->zdepth = (tmp&0x0C)>>2;
 	sa->collisionmask = (tmp&0xF0)>>4;
 	
-	tmp = *(u8*)VERA_DATA0;
+	tmp = VERA_DATA0;
 	sa->paletteoffset = (tmp&0x0F);
 	sa->width = (tmp&0x30)>>4;
 	sa->height = (tmp&0xC0)>>6;
 
 	// Restore VERA address
-	*(u8*)VERA_ADDR_H=oldaddrhi;
-	*(u16*)VERA_ADDR=oldaddr;
+	VERA_ADDR_H=oldaddrhi;
+	VERA_ADDR=oldaddr;
 }
 
 /******************************************************************************
@@ -153,12 +153,12 @@ void getspriteattribs(u8 spriteID, struct _spriteattributes *sa) {
 ******************************************************************************/
 void set_sprite_coord(u8 spriteid, u16 x, u16 y){
 	// Set VERA address to offset 2 of Sprite ID = X coordinate
-	*(u16*)VERA_ADDR=(0xFC00+(spriteid*8))+2;
-	*(u8*)VERA_ADDR_H=0x11;
-	*(u8*)VERA_DATA0=x;
-	*(u8*)VERA_DATA0=x>>8;
-	*(u8*)VERA_DATA0=y;
-	*(u8*)VERA_DATA0=y>>8;
+	VERA_ADDR=(0xFC00+(spriteid*8))+2;
+	VERA_ADDR_H=0x11;
+	VERA_DATA0=x;
+	VERA_DATA0=x>>8;
+	VERA_DATA0=y;
+	VERA_DATA0=y>>8;
 }
 
 /******************************************************************************
@@ -250,16 +250,16 @@ void showcircle(u8 circle) {
 		case CYAN_CIRCLE:	circle=22; break;
 	}
 	// Upper left part of circle
-	*(u8*)VERA_DATA0 = circle;
+	VERA_DATA0 = circle;
 	// Upper right part of circle
-	*(u8*)VERA_DATA0 = ++circle;
+	VERA_DATA0 = ++circle;
 	// Change VERA address to go down 1 line and left
-	*(u8*)VERA_ADDR_M = *(u8*)VERA_ADDR_M + 1;
-	*(u8*)VERA_ADDR_L = *(u8*)VERA_ADDR_L - 4;
+	VERA_ADDR_M = VERA_ADDR_M + 1;
+	VERA_ADDR_L = VERA_ADDR_L - 4;
 	// Lower left part of the circle
-	*(u8*)VERA_DATA0 = ++circle;
+	VERA_DATA0 = ++circle;
 	// Lower right part of the circle
-	*(u8*)VERA_DATA0 = ++circle;
+	VERA_DATA0 = ++circle;
 }
 
 /******************************************************************************
@@ -269,19 +269,19 @@ void enablebutton() {
 	u8 cnt=0;
 
 	btnenabled=1;
-	*(u8*)VERA_ADDR_H = 0x21;
+	VERA_ADDR_H = 0x21;
 	gotoxy(20, 24);
 	for (cnt=0; cnt<6; cnt++)
-		*(u8*)VERA_DATA0 = 26;
+		VERA_DATA0 = 26;
 	gotoxy(20, 25);
 	for (cnt=0; cnt<14; cnt++)
-		*(u8*)VERA_DATA0 = 26;
+		VERA_DATA0 = 26;
 	gotoxy(20, 26);
 	for (cnt=0; cnt<14; cnt++)
-		*(u8*)VERA_DATA0 = 26;
+		VERA_DATA0 = 26;
 	gotoxy(20, 27);
 	for (cnt=0; cnt<16; cnt++)
-		*(u8*)VERA_DATA0 = 26;
+		VERA_DATA0 = 26;
 }
 
 /******************************************************************************
@@ -289,91 +289,91 @@ void enablebutton() {
 ******************************************************************************/
 void grayoutbutton() {
 	btnenabled=0;
-	*(u8*)VERA_ADDR_H = 0x21;
+	VERA_ADDR_H = 0x21;
 	gotoxy(20, 24);
-	*(u8*)VERA_DATA0 = 28;
-	*(u8*)VERA_DATA0 = 26;
-	*(u8*)VERA_DATA0 = 29;
-	*(u8*)VERA_DATA0 = 30;
-	*(u8*)VERA_DATA0 = 31;
-	*(u8*)VERA_DATA0 = 32;
+	VERA_DATA0 = 28;
+	VERA_DATA0 = 26;
+	VERA_DATA0 = 29;
+	VERA_DATA0 = 30;
+	VERA_DATA0 = 31;
+	VERA_DATA0 = 32;
 	gotoxy(20, 25);
-	*(u8*)VERA_DATA0 = 33;
-	*(u8*)VERA_DATA0 = 26;
-	*(u8*)VERA_DATA0 = 34;
-	*(u8*)VERA_DATA0 = 35;
-	*(u8*)VERA_DATA0 = 36;
-	*(u8*)VERA_DATA0 = 37;
-	*(u8*)VERA_DATA0 = 38;
-	*(u8*)VERA_DATA0 = 39;
-	*(u8*)VERA_DATA0 = 40;
-	*(u8*)VERA_DATA0 = 41;
-	*(u8*)VERA_DATA0 = 42;
-	*(u8*)VERA_DATA0 = 43;
-	*(u8*)VERA_DATA0 = 44;
-	*(u8*)VERA_DATA0 = 45;
+	VERA_DATA0 = 33;
+	VERA_DATA0 = 26;
+	VERA_DATA0 = 34;
+	VERA_DATA0 = 35;
+	VERA_DATA0 = 36;
+	VERA_DATA0 = 37;
+	VERA_DATA0 = 38;
+	VERA_DATA0 = 39;
+	VERA_DATA0 = 40;
+	VERA_DATA0 = 41;
+	VERA_DATA0 = 42;
+	VERA_DATA0 = 43;
+	VERA_DATA0 = 44;
+	VERA_DATA0 = 45;
 	gotoxy(20, 26);
-	*(u8*)VERA_DATA0 = 33;
-	*(u8*)VERA_DATA0 = 26;
-	*(u8*)VERA_DATA0 = 46;
-	*(u8*)VERA_DATA0 = 47;
-	*(u8*)VERA_DATA0 = 48;
-	*(u8*)VERA_DATA0 = 49;
-	*(u8*)VERA_DATA0 = 50;
-	*(u8*)VERA_DATA0 = 51;
-	*(u8*)VERA_DATA0 = 52;
-	*(u8*)VERA_DATA0 = 53;
-	*(u8*)VERA_DATA0 = 54;
-	*(u8*)VERA_DATA0 = 55;
-	*(u8*)VERA_DATA0 = 56;
-	*(u8*)VERA_DATA0 = 57;
+	VERA_DATA0 = 33;
+	VERA_DATA0 = 26;
+	VERA_DATA0 = 46;
+	VERA_DATA0 = 47;
+	VERA_DATA0 = 48;
+	VERA_DATA0 = 49;
+	VERA_DATA0 = 50;
+	VERA_DATA0 = 51;
+	VERA_DATA0 = 52;
+	VERA_DATA0 = 53;
+	VERA_DATA0 = 54;
+	VERA_DATA0 = 55;
+	VERA_DATA0 = 56;
+	VERA_DATA0 = 57;
 	gotoxy(20, 27);
-	*(u8*)VERA_DATA0 = 58;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 60;
-	*(u8*)VERA_DATA0 = 61;
-	*(u8*)VERA_DATA0 = 62;
-	*(u8*)VERA_DATA0 = 63;
-	*(u8*)VERA_DATA0 = 64;
-	*(u8*)VERA_DATA0 = 65;
-	*(u8*)VERA_DATA0 = 66;
-	*(u8*)VERA_DATA0 = 67;
-	*(u8*)VERA_DATA0 = 68;
-	*(u8*)VERA_DATA0 = 69;
-	*(u8*)VERA_DATA0 = 70;
-	*(u8*)VERA_DATA0 = 71;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 72;
+	VERA_DATA0 = 58;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 60;
+	VERA_DATA0 = 61;
+	VERA_DATA0 = 62;
+	VERA_DATA0 = 63;
+	VERA_DATA0 = 64;
+	VERA_DATA0 = 65;
+	VERA_DATA0 = 66;
+	VERA_DATA0 = 67;
+	VERA_DATA0 = 68;
+	VERA_DATA0 = 69;
+	VERA_DATA0 = 70;
+	VERA_DATA0 = 71;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 72;
 }
 
 /******************************************************************************
  Show tiles on Layer 1 that makes the button look pressed down
 ******************************************************************************/
 void pressedbutton() {
-	*(u8*)VERA_ADDR_H = 0x21;
+	VERA_ADDR_H = 0x21;
 	gotoxy(20, 24);
-	*(u8*)VERA_DATA0 = 28;
+	VERA_DATA0 = 28;
 	gotoxy(20, 25);
-	*(u8*)VERA_DATA0 = 33;
+	VERA_DATA0 = 33;
 	gotoxy(20, 26);
-	*(u8*)VERA_DATA0 = 33;
+	VERA_DATA0 = 33;
 	gotoxy(20, 27);
-	*(u8*)VERA_DATA0 = 58;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 59;
-	*(u8*)VERA_DATA0 = 72;
+	VERA_DATA0 = 58;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 59;
+	VERA_DATA0 = 72;
 }
 
 /******************************************************************************
@@ -382,16 +382,16 @@ void pressedbutton() {
 void clrscr() {
 	u8 x, y;
 
-	*(u8*)VERA_ADDR_H = 0x11;
-	*(u8*)VERA_ADDR_M = 0xB0;
-	*(u8*)VERA_ADDR_L = 0x00;
+	VERA_ADDR_H = 0x11;
+	VERA_ADDR_M = 0xB0;
+	VERA_ADDR_L = 0x00;
 	for (y=0;y<30;y++) {
 		for(x=0;x<40;x++) {
-			*(u8*)VERA_DATA0 = 26;
-			*(u8*)VERA_DATA0 = 0;
+			VERA_DATA0 = 26;
+			VERA_DATA0 = 0;
 		}
-		*(u8*)VERA_ADDR_L = 0x00;
-		*(u8*)VERA_ADDR_M = *(u8*)VERA_ADDR_M+1;
+		VERA_ADDR_L = 0x00;
+		VERA_ADDR_M = VERA_ADDR_M+1;
 	}
 }
 
@@ -399,7 +399,7 @@ void clrscr() {
  Show the secret code that the computer had made up
 ******************************************************************************/
 void showresult() {
-	*(u8*)VERA_ADDR_H = 0x21;
+	VERA_ADDR_H = 0x21;
 	gotoxy(23, 18);
 	showcircle(combination[0]);
 	gotoxy(26, 18);
@@ -416,11 +416,11 @@ void showresult() {
 void box(u8 x, u8 y, u8 w, u8 h, u8 ch) {
 	u8 cntx, cnty;
 
-	*(u8*)VERA_ADDR_H = 0x21;
+	VERA_ADDR_H = 0x21;
 	for (cnty=y;cnty<y+h;cnty++) {
 		gotoxy(x, cnty);
 		for (cntx=x;cntx<x+w;cntx++) {
-			*(u8*)VERA_DATA0 = ch;
+			VERA_DATA0 = ch;
 		}
 	}
 }
@@ -430,27 +430,27 @@ void box(u8 x, u8 y, u8 w, u8 h, u8 ch) {
  Yes and No options
 ******************************************************************************/
 void playagain() {
-	*(u8*)VERA_ADDR_H = 0x21;
+	VERA_ADDR_H = 0x21;
 	gotoxy(23, 13);
-	*(u8*)VERA_DATA0 = 82; // P
-	*(u8*)VERA_DATA0 = 79; // L
-	*(u8*)VERA_DATA0 = 75; // A
-	*(u8*)VERA_DATA0 = 87; // Y
-	*(u8*)VERA_DATA0 = 26; // [spc]
-	*(u8*)VERA_DATA0 = 75; // A
-	*(u8*)VERA_DATA0 = 77; // G
-	*(u8*)VERA_DATA0 = 75; // A
-	*(u8*)VERA_DATA0 = 78; // I
-	*(u8*)VERA_DATA0 = 80; // N
-	*(u8*)VERA_DATA0 = 74; // ?
+	VERA_DATA0 = 82; // P
+	VERA_DATA0 = 79; // L
+	VERA_DATA0 = 75; // A
+	VERA_DATA0 = 87; // Y
+	VERA_DATA0 = 26; // [spc]
+	VERA_DATA0 = 75; // A
+	VERA_DATA0 = 77; // G
+	VERA_DATA0 = 75; // A
+	VERA_DATA0 = 78; // I
+	VERA_DATA0 = 80; // N
+	VERA_DATA0 = 74; // ?
 	gotoxy(25, 15);
-	*(u8*)VERA_DATA0 = 87; // Y
-	*(u8*)VERA_DATA0 = 76; // E
-	*(u8*)VERA_DATA0 = 83; // S
-	*(u8*)VERA_DATA0 = 26; // [spc]
-	*(u8*)VERA_DATA0 = 26; // [spc]
-	*(u8*)VERA_DATA0 = 80; // N
-	*(u8*)VERA_DATA0 = 81; // O
+	VERA_DATA0 = 87; // Y
+	VERA_DATA0 = 76; // E
+	VERA_DATA0 = 83; // S
+	VERA_DATA0 = 26; // [spc]
+	VERA_DATA0 = 26; // [spc]
+	VERA_DATA0 = 80; // N
+	VERA_DATA0 = 81; // O
 }
 
 /******************************************************************************
@@ -458,16 +458,16 @@ void playagain() {
 ******************************************************************************/
 void youwon() {
 	gotoxy(24, 12);
-	*(u8*)VERA_ADDR_H = 0x21;
-	*(u8*)VERA_DATA0 = 87; // Y
-	*(u8*)VERA_DATA0 = 81; // O
-	*(u8*)VERA_DATA0 = 85; // U
-	*(u8*)VERA_DATA0 = 26; // [spc]
-	*(u8*)VERA_DATA0 = 86; // W
-	*(u8*)VERA_DATA0 = 81; // O
-	*(u8*)VERA_DATA0 = 80; // N
-	*(u8*)VERA_DATA0 = 73; // !
-	*(u8*)VERA_DATA0 = 73; // !
+	VERA_ADDR_H = 0x21;
+	VERA_DATA0 = 87; // Y
+	VERA_DATA0 = 81; // O
+	VERA_DATA0 = 85; // U
+	VERA_DATA0 = 26; // [spc]
+	VERA_DATA0 = 86; // W
+	VERA_DATA0 = 81; // O
+	VERA_DATA0 = 80; // N
+	VERA_DATA0 = 73; // !
+	VERA_DATA0 = 73; // !
 	playagain();
 }
 
@@ -476,16 +476,16 @@ void youwon() {
 ******************************************************************************/
 void youlost() {
 	gotoxy(24, 12);
-	*(u8*)VERA_ADDR_H = 0x21;
-	*(u8*)VERA_DATA0 = 87; // Y
-	*(u8*)VERA_DATA0 = 81; // O
-	*(u8*)VERA_DATA0 = 85; // U
-	*(u8*)VERA_DATA0 = 26; // [spc]
-	*(u8*)VERA_DATA0 = 79; // L
-	*(u8*)VERA_DATA0 = 81; // O
-	*(u8*)VERA_DATA0 = 83; // S
-	*(u8*)VERA_DATA0 = 84; // T
-	*(u8*)VERA_DATA0 = 73; // !
+	VERA_ADDR_H = 0x21;
+	VERA_DATA0 = 87; // Y
+	VERA_DATA0 = 81; // O
+	VERA_DATA0 = 85; // U
+	VERA_DATA0 = 26; // [spc]
+	VERA_DATA0 = 79; // L
+	VERA_DATA0 = 81; // O
+	VERA_DATA0 = 83; // S
+	VERA_DATA0 = 84; // T
+	VERA_DATA0 = 73; // !
 	playagain();
 }
 
@@ -513,8 +513,8 @@ void getynclick() {
 	while (exitloop==0) {
 		// Get mouse information into normal variables
 		btn = getmouse(TMP_PTR0);
-		mousex = *(u16*)TMP_PTR0;
-		mousey = *(u16*)TMP_PTR1;
+		mousex = TMP_PTR0;
+		mousey = TMP_PTR1;
 		// If left mousebutton pressed
 		if (btn==1) {
 			// If the mouse is within the horizontal coordinates of the text
@@ -592,28 +592,28 @@ void considerguess() {
 
 				if (fc[0]==combination[0]) {
 					gotoxy(resx, lineinfo[cnt].tiley+resy);
-					*(u8*)VERA_DATA0 = 1;
+					VERA_DATA0 = 1;
 					f0used=2;
 					if (resx==13) ++resx;
 					else {resx=13;++resy;}
 				}
 				if (fc[1]==combination[1]) {
 					gotoxy(resx, lineinfo[cnt].tiley+resy);
-					*(u8*)VERA_DATA0 = 1;
+					VERA_DATA0 = 1;
 					f1used=2;
 					if (resx==13) ++resx;
 					else {resx=13;++resy;}
 				}
 				if (fc[2]==combination[2]) {
 					gotoxy(resx, lineinfo[cnt].tiley+resy);
-					*(u8*)VERA_DATA0 = 1;
+					VERA_DATA0 = 1;
 					f2used=2;
 					if (resx==13) ++resx;
 					else {resx=13;++resy;}
 				}
 				if (fc[3]==combination[3]) {
 					gotoxy(resx, lineinfo[cnt].tiley+resy);
-					*(u8*)VERA_DATA0 = 1;
+					VERA_DATA0 = 1;
 					f3used=2;
 					if (resx==13) ++resx;
 					else {resx=13;++resy;}
@@ -626,21 +626,21 @@ void considerguess() {
 				if (f0used!=2) {
 					if ((fc[0]==combination[1]) && (f1used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 						if (resx==13) ++resx;
 						else {resx=13;++resy;}
 						f1used=1;
 					} else
 					if ((fc[0]==combination[2]) && (f2used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 						if (resx==13) ++resx;
 						else {resx=13;++resy;}
 						f2used=1;
 					} else
 					if ((fc[0]==combination[3]) && (f1used==3)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 						if (resx==13) ++resx;
 						else {resx=13;++resy;}
 						f3used=1;
@@ -649,21 +649,21 @@ void considerguess() {
 				if (f1used!=2) {
 					if ((fc[1]==combination[0]) && (f0used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 						if (resx==13) ++resx;
 						else {resx=13;++resy;}
 						f0used=1;
 					} else
 					if ((fc[1]==combination[2]) && (f2used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 						if (resx==13) ++resx;
 						else {resx=13;++resy;}
 						f2used=1;
 					} else
 					if ((fc[1]==combination[3]) && (f3used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 						if (resx==13) ++resx;
 						else {resx=13;++resy;}
 						f3used=1;
@@ -672,21 +672,21 @@ void considerguess() {
 				if (f2used!=2) {
 					if ((fc[2]==combination[0]) && (f0used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 						if (resx==13) ++resx;
 						else {resx=13;++resy;}
 						f0used=1;
 					} else
 					if ((fc[2]==combination[1]) && (f1used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 						if (resx==13) ++resx;
 						else {resx=13;++resy;}
 						f1used=1;
 					} else
 					if ((fc[2]==combination[3]) && (f3used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 						if (resx==13) ++resx;
 						else {resx=13;++resy;}
 						f3used=1;
@@ -695,15 +695,15 @@ void considerguess() {
 				if (f3used!=2) {
 					if ((fc[3]==combination[0]) && (f0used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 					} else
 					if ((fc[3]==combination[1]) && (f1used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 					} else
 					if ((fc[3]==combination[2]) && (f2used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
-						*(u8*)VERA_DATA0 = 0;
+						VERA_DATA0 = 0;
 					}
 				}
 			}
@@ -728,8 +728,8 @@ int main() {
 
 	printf("loading assets...");
 
-	*(u8*)VERA_DC_HSCALE = 0x40;
-	*(u8*)VERA_DC_VSCALE = 0x40;
+	VERA_DC_HSCALE = 0x40;
+	VERA_DC_VSCALE = 0x40;
 
 	// Enable mouse (copying sprite data to VERA address 0x13000)
 	enamouse();
@@ -737,17 +737,18 @@ int main() {
 	setsplashpal();
 
 	// Copy mouse pointer from default VERA position 0x13000 to 0x0A300
-	*(u8*)VERA_ADDR_H = 0x11;
-	*(u16*)VERA_ADDR = 0x3000;
-	*(u8*)VERA_CTRL = 1;
-	*(u8*)VERA_ADDR_H = 0x10;
-	*(u16*)VERA_ADDR = 0xA300;
+	VERA_ADDR_H = 0x11;
+//	VERA_ADDR = 0x3000;
+	VERA_ADDR = 0x3000;
+	VERA_CTRL = 1;
+	VERA_ADDR_H = 0x10;
+	VERA_ADDR = 0xA300;
 
 	for (cnt=0;cnt<255;cnt++)
-		*(u8*)VERA_DATA1 = *(u8*)VERA_DATA0;
-	*(u8*)VERA_DATA1 = *(u8*)VERA_DATA0;
+		VERA_DATA1 = VERA_DATA0;
+	VERA_DATA1 = VERA_DATA0;
 
-	*(u8*)VERA_CTRL = 0;
+	VERA_CTRL = 0;
 
 	// Change mouse sprite to point to data at address 0x0A300
 	getspriteattribs(0, &sa);
@@ -763,19 +764,19 @@ int main() {
 	bload("music.zsm", 0xA000, 2);
 	initzsm();
 
-	*(u8*)VERA_L0_CONFIG = 0x06; //bitmap mode, 4bpp color
-	*(u8*)VERA_L0_TILEBASE = SPLASH_BASE;
-	*(u8*)VERA_L0_HSCROLL_H = SPLASH_PAL_OFFSET;
+	VERA_L0_CONFIG = 0x06; //bitmap mode, 4bpp color
+	VERA_L0_TILEBASE = SPLASH_BASE;
+	VERA_L0_HSCROLL_H = SPLASH_PAL_OFFSET;
 
 	// map height = 0 = 32 tiles
 	// map width = 2 = 128 tiles
 	// color depth = 2 = 4 bpp
-	*(u8*)VERA_L1_CONFIG = 0b00100010;
+	VERA_L1_CONFIG = 0b00100010;
 
 	// tile width = 0 = 8 pixels
 	// tile height = 0 = 8 pixels
 	// tile_base = address of tile data = 0x9600
-	*(u8*)VERA_L1_TILEBASE = 0x4C;
+	VERA_L1_TILEBASE = 0x4C;
 
 	//Configure sprites
 	configuresprites();
@@ -784,7 +785,7 @@ int main() {
 	clrscr();
 	
 	// Enable Layer 0 & sprites
-	*(u8*)VERA_DC_VIDEO = *(u8*)VERA_DC_VIDEO|0x50;
+	VERA_DC_VIDEO = VERA_DC_VIDEO|0x50;
 
 	// Start playing the music
 	zsmplay(0);
@@ -806,8 +807,8 @@ int main() {
 	}
 
 	// Reset L0 settings to point to the background image instead of splash image
-	*(u8*)VERA_L0_HSCROLL_H = 0; // Reset palette back to default
-	*(u8*)VERA_L0_TILEBASE = 0;
+	VERA_L0_HSCROLL_H = 0; // Reset palette back to default
+	VERA_L0_TILEBASE = 0;
 
 	//Initialize the game
 	initgame();
@@ -815,8 +816,8 @@ int main() {
 	while(1){
 		// Get mouse information and store it in "normal" variables
 		btn = getmouse(TMP_PTR0);
-		mousex = *(u16*)TMP_PTR0;
-		mousey = *(u16*)TMP_PTR1;
+		mousex = TMP_PTR0;
+		mousey = TMP_PTR1;
 
 		// If Both right and left mousebutton is pressed
 		if (btn==3) {
@@ -882,7 +883,7 @@ int main() {
 						// If the mousecursor is within Y coords of line
 						if ((mousey>=lineinfo[cnt].miny) &&
 						    (mousey<=lineinfo[cnt].maxy)) {
-							*(u8*)VERA_ADDR_H = 0x21;
+							VERA_ADDR_H = 0x21;
 							if ((mousex>=FIELDMINX0) &&
 							    (mousex<=FIELDMAXX0)) {
 								lineinfo[cnt].fieldcolor[0]=sprite;

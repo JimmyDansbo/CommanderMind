@@ -13,6 +13,7 @@ struct _lineinfo lineinfo[10];
 u8 combination[4];
 u8 musicplaying=1;
 u8 btn2pressed=0;
+u8 currentplaying=0;
 
 #define RED_CIRCLE	1
 #define YELLOW_CIRCLE	5
@@ -513,8 +514,8 @@ void getynclick() {
 	while (exitloop==0) {
 		// Get mouse information into normal variables
 		btn = getmouse(TMP_PTR0);
-		mousex = TMP_PTR0;
-		mousey = TMP_PTR1;
+		mousex = *(u16*)TMP_PTR0;
+		mousey = *(u16*)TMP_PTR1;
 		// If left mousebutton pressed
 		if (btn==1) {
 			// If the mouse is within the horizontal coordinates of the text
@@ -522,6 +523,10 @@ void getynclick() {
 				// If mouse is within the vertical coordinates of Yes text
 				if ((mousex>=200) && (mousex<224)) { //YES button pressed
 					initgame();
+					zsmstop(currentplaying);
+					currentplaying=0;
+					zsm_rewind(currentplaying);
+					zsmplay(currentplaying);
 					exitloop=1;
 				} else
 				// If mouse is within the vertical coordinates of No text
@@ -533,10 +538,10 @@ void getynclick() {
 			if (btn2pressed==0) {
 				btn2pressed=1;
 				if (musicplaying==0) {
-					zsmplay(0);
+					zsmplay(currentplaying);
 					musicplaying=1;
 				} else {
-					zsmstop(0);
+					zsmstop(currentplaying);
 					musicplaying=0;
 				}
 			}
@@ -551,6 +556,9 @@ void showwinner() {
 	box(23, 18, 11, 2, 26);
 	showresult();
 	youwon();
+	zsmstop(currentplaying);
+	currentplaying=2;
+	zsmplay(currentplaying);
 	getynclick();
 }
 
@@ -561,6 +569,9 @@ void showloser() {
 	box(23, 18, 11, 2, 26);
 	showresult();
 	youlost();
+	zsmstop(currentplaying);
+	currentplaying=1;
+	zsmplay(currentplaying);
 	getynclick();
 }
 
@@ -738,7 +749,6 @@ int main() {
 
 	// Copy mouse pointer from default VERA position 0x13000 to 0x0A300
 	VERA_ADDR_H = 0x11;
-//	VERA_ADDR = 0x3000;
 	VERA_ADDR = 0x3000;
 	VERA_CTRL = 1;
 	VERA_ADDR_H = 0x10;
@@ -762,7 +772,14 @@ int main() {
 	vload("tiles.bin", 0x9800, 0);
 	bload("zsmkit-a000.bin", 0xA000, 1);
 	bload("music.zsm", 0xA000, 2);
+	bload("loss.zsm", 0xA000, 8);
+	bload("win.zsm", 0xA000,12);
+
 	initzsm();
+	zsm_setbank(1, 8);
+	zsm_setmem(1, 0xA000);
+	zsm_setbank(2, 12);
+	zsm_setmem(2, 0xa000);
 
 	VERA_L0_CONFIG = 0x06; //bitmap mode, 4bpp color
 	VERA_L0_TILEBASE = SPLASH_BASE;
@@ -788,7 +805,8 @@ int main() {
 	VERA_DC_VIDEO = VERA_DC_VIDEO|0x50;
 
 	// Start playing the music
-	zsmplay(0);
+	currentplaying=0;
+	zsmplay(currentplaying);
 
 	// Wait for the user to start the game and let them toggle the music
 	while ((btn=getmouse(TMP_PTR0))!=1) {
@@ -796,10 +814,10 @@ int main() {
 			if (btn2pressed==0) {
 				btn2pressed=1;
 				if (musicplaying==0) {
-					zsmplay(0);
+					zsmplay(currentplaying);
 					musicplaying=1;
 				} else {
-					zsmstop(0);
+					zsmstop(currentplaying);
 					musicplaying=0;
 				}
 			}
@@ -816,8 +834,8 @@ int main() {
 	while(1){
 		// Get mouse information and store it in "normal" variables
 		btn = getmouse(TMP_PTR0);
-		mousex = TMP_PTR0;
-		mousey = TMP_PTR1;
+		mousex = *(u16*)TMP_PTR0;
+		mousey = *(u16*)TMP_PTR1;
 
 		// If Both right and left mousebutton is pressed
 		if (btn==3) {
@@ -831,10 +849,10 @@ int main() {
 			if (btn2pressed==0) {
 				btn2pressed=1;
 				if (musicplaying==0) {
-					zsmplay(0);
+					zsmplay(currentplaying);
 					musicplaying=1;
 				} else {
-					zsmstop(0);
+					zsmstop(currentplaying);
 					musicplaying=0;
 				}
 			}

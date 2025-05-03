@@ -12,6 +12,9 @@
 .export _initzsm
 .export _zsmplay
 .export _zsmstop
+.export _zsm_setbank
+.export _zsm_setmem
+.export _zsm_rewind
 
 .segment "CODE"
 ; ZeroPage variables/pointers
@@ -49,6 +52,7 @@ ZSM_SETBANK	= $A01B
 ZSM_SETMEM	= $A01E
 ZSM_PLAY	= $A006
 ZSM_STOP	= $A009
+ZSM_REWIND	= $A00C
 
 ; *****************************************************************************
 ; Tell the ZSM kit to start playing music
@@ -85,6 +89,35 @@ _initzsm:
 	lda	#<$A000			; Memory start of song
 	ldy	#>$A000
 	jmp	ZSM_SETMEM
+
+_zsm_setbank:
+	pha				; Save priority bank on stack	
+	lda	#1			; Ensure correct RAM bank is selected before call
+	sta	RAM_BANK
+	jsr	popa			; Get priority ID into X
+	tax
+	pla				; Restore priority bank from stack
+	jmp	ZSM_SETBANK
+
+; PER-PRIORITY: set address <- do this second
+_zsm_setmem:
+	pha				; Save lo part of address on stack
+	lda	#1			; Ensure correct RAM bank is selected before call
+	sta	RAM_BANK
+	txa				; Move hi part of address into .Y
+	tay
+	jsr	popa			; Get priority ID into X
+	tax
+	pla				; Restore lo part of address on stack
+	jmp	ZSM_SETMEM
+
+; PER-PRIORITY: reset to start of music
+_zsm_rewind:
+	tax				; Move priority to X
+	lda	#1			; Ensure correct RAM bank is selected before call
+	sta	RAM_BANK
+	jmp	ZSM_REWIND
+
 
 ; *****************************************************************************
 ; Use the SMC to reset the system

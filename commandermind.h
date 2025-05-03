@@ -20,6 +20,9 @@ extern char __fastcall__ bload(char *str, unsigned int addr, char bank);
 extern void __fastcall__ initzsm();
 extern void __fastcall__ zsmplay(u8 priority);
 extern void __fastcall__ zsmstop(u8 priority);
+extern void __fastcall__ zsm_setbank(u8 slot, u8 bank);
+extern void __fastcall__ zsm_setmem(u8 slot, u16 addr);
+extern void __fastcall__ zsm_rewind(u8 priority);
 
 #define BLACK		0x00
 #define WHITE		0x01

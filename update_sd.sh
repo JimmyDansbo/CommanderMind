@@ -7,4 +7,4 @@ echo "Creating partition and formatting to FAT32"
 parted -s $SDCARD mklabel msdos mkpart primary fat32 2048s -- -1
 mformat -i $SDCARD@@1M -F
 echo "Copying files..."
-mcopy -i $SDCARD@@1M -o -m *.PRG *.BIN *.ZSM ::
+mcopy -v -i $SDCARD@@1M -o -m *.PRG *.BIN *.ZSM ::

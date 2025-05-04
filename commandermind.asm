@@ -54,6 +54,13 @@ ZSM_PLAY	= $A006
 ZSM_STOP	= $A009
 ZSM_REWIND	= $A00C
 
+RED_CIRCLE	= 1
+YELLOW_CIRCLE	= 5
+BLUE_CIRCLE	= 9
+GREEN_CIRCLE	= 13
+PURPLE_CIRCLE	= 17
+CYAN_CIRCLE	= 21
+
 ; *****************************************************************************
 ; Tell the ZSM kit to start playing music
 ; *****************************************************************************
@@ -145,26 +152,10 @@ _rndcircle:
 	beq	_rndcircle
 	; Here we have a number between 1 and 6, both inclusive. Convert it to sprite index
 	ldx	#0
-	cmp	#6
-	bne	:+
-	lda	#21	;cyan circle
+	tay
+	lda	spr_indx,y
 	rts
-:	cmp	#5
-	bne	:+
-	lda	#17	;purple circle
-	rts
-:	cmp	#4
-	bne	:+
-	lda	#13	;green circle
-	rts
-:	cmp	#3
-	bne	:+
-	lda	#9
-	rts
-:	cmp	#2
-	bne	:+
-	lda	#5
-:	rts
+spr_indx: .byte 0,RED_CIRCLE,YELLOW_CIRCLE,BLUE_CIRCLE,GREEN_CIRCLE,PURPLE_CIRCLE,CYAN_CIRCLE
 
 ; *****************************************************************************
 ; Get mouse state, coordinates as button presses

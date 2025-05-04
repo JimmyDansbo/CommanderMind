@@ -38,7 +38,7 @@ u8 currentplaying=0;
 
 /******************************************************************************
  Ensure the 10x4 positions on the playing field are reset and ready for the
- user to place pieces and guess at the coe
+ user to place pieces and guess at the code
 ******************************************************************************/
 void preplines() {
 	u8 cnt=0;
@@ -182,7 +182,7 @@ void configuresprites(){
 	sa.paletteoffset 	= 0;
 
 	// The sprites are the same as some of the tiles used
-	// so the only thin changed is the address of the sprite image data
+	// so the only thing changed is the address of the sprite image data
 	sa.address		= 0x9840;
 	configSprite(1, &sa);
 	sa.address		= 0x9860;
@@ -497,6 +497,7 @@ void initgame() {
 	clrscr();
 	preplines();
 	grayoutbutton();
+	// Create a random code 
 	combination[0]=rndcircle();
 	combination[1]=rndcircle();
 	combination[2]=rndcircle();
@@ -602,29 +603,37 @@ void considerguess() {
 				lineinfo[cnt].isDone=1;
 
 				if (fc[0]==combination[0]) {
+					// Place a black peg
 					gotoxy(resx, lineinfo[cnt].tiley+resy);
 					VERA_DATA0 = 1;
+					// Indicate correct color and placement
 					f0used=2;
 					if (resx==13) ++resx;
 					else {resx=13;++resy;}
 				}
 				if (fc[1]==combination[1]) {
+					// Place a black peg
 					gotoxy(resx, lineinfo[cnt].tiley+resy);
 					VERA_DATA0 = 1;
+					// Indicate correct color and placement
 					f1used=2;
 					if (resx==13) ++resx;
 					else {resx=13;++resy;}
 				}
 				if (fc[2]==combination[2]) {
+					// Place a black peg
 					gotoxy(resx, lineinfo[cnt].tiley+resy);
 					VERA_DATA0 = 1;
+					// Indicate correct color and placement
 					f2used=2;
 					if (resx==13) ++resx;
 					else {resx=13;++resy;}
 				}
 				if (fc[3]==combination[3]) {
+					// Place a black peg
 					gotoxy(resx, lineinfo[cnt].tiley+resy);
 					VERA_DATA0 = 1;
+					// Indicate correct color and placement
 					f3used=2;
 					if (resx==13) ++resx;
 					else {resx=13;++resy;}
@@ -649,7 +658,7 @@ void considerguess() {
 						else {resx=13;++resy;}
 						f2used=1;
 					} else
-					if ((fc[0]==combination[3]) && (f1used==3)) {
+					if ((fc[0]==combination[3]) && (f1used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
 						VERA_DATA0 = 0;
 						if (resx==13) ++resx;

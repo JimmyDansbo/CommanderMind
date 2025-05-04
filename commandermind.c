@@ -776,10 +776,12 @@ int main() {
 	bload("win.zsm", 0xA000,12);
 
 	initzsm();
+	zsm_setbank(0, 2);
+	zsm_setmem(0, 0xA000);
 	zsm_setbank(1, 8);
 	zsm_setmem(1, 0xA000);
 	zsm_setbank(2, 12);
-	zsm_setmem(2, 0xa000);
+	zsm_setmem(2, 0xA000);
 
 	VERA_L0_CONFIG = 0x06; //bitmap mode, 4bpp color
 	VERA_L0_TILEBASE = SPLASH_BASE;

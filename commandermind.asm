@@ -81,14 +81,7 @@ _initzsm:
 	lda	#1			; Goto RAM BANK 1 for ZSM 
 	sta	RAM_BANK
 	jsr	ZSM_INIT_ENGINE
-	jsr	ZSM_SETISR
-	ldx	#0			; Priority (channel) 0
-	lda	#2			; File located in RAM BANK 2
-	jsr	ZSM_SETBANK
-	ldx	#0			; Priority
-	lda	#<$A000			; Memory start of song
-	ldy	#>$A000
-	jmp	ZSM_SETMEM
+	jmp	ZSM_SETISR
 
 _zsm_setbank:
 	pha				; Save priority bank on stack	

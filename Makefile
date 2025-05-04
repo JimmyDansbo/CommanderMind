@@ -11,7 +11,7 @@ sdcard:
 	truncate -s 34M $(SDCARD)
 	parted -s $(SDCARD) mklabel msdos mkpart primary fat32 2048s -- -1
 	mformat -i $(SDCARD)@@1M -F
-	mcopy -i $(SDCARD)@@1M -o -m *.PRG *.BIN *.ZSM ::
+	mcopy -v -i $(SDCARD)@@1M -o -m *.PRG *.BIN *.ZSM ::
 
 zip:
 	zip commandermind.zip *.PRG *.BIN *.ZSM

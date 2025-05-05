@@ -4,17 +4,6 @@
 #include "commandermind.h"
 #include "splashpalette.h"
 
-u16 mousex=0;
-u16 mousey=0;
-u8 sprite=0;
-u8 btnpressed=0;
-u8 btnenabled=0;
-struct _lineinfo lineinfo[10];
-u8 combination[4];
-u8 musicplaying=1;
-u8 btn2pressed=0;
-u8 currentplaying=0;
-
 #define RED_CIRCLE	1
 #define YELLOW_CIRCLE	5
 #define BLUE_CIRCLE	9
@@ -35,6 +24,24 @@ u8 currentplaying=0;
 #define FIELDTX1 4
 #define FIELDTX2 7
 #define FIELDTX3 10
+
+#define MUSIC1 2
+#define LOSS1  3
+#define WIN1   12
+#define MUSIC2 20
+#define LOSS2  28
+#define WIN2   29
+
+u16 mousex=0;
+u16 mousey=0;
+u8 sprite=0;
+u8 btnpressed=0;
+u8 btnenabled=0;
+struct _lineinfo lineinfo[10];
+u8 combination[4];
+u8 musicplaying=1;
+u8 btn2pressed=0;
+u8 currentplaying=MUSIC1;
 
 /******************************************************************************
  Ensure the 10x4 positions on the playing field are reset and ready for the
@@ -505,6 +512,11 @@ void initgame() {
 	box(23, 18, 11, 2, 27);
 }
 
+void zsm_setaddr(u8 priority, u8 bank, u16 addr) {
+	zsm_setbank(priority, bank);
+	zsm_setmem(priority, addr);
+}
+
 /******************************************************************************
  Wait for the user to press the Yes or the No text
 ******************************************************************************/
@@ -524,10 +536,14 @@ void getynclick() {
 				// If mouse is within the vertical coordinates of Yes text
 				if ((mousex>=200) && (mousex<224)) { //YES button pressed
 					initgame();
-					zsmstop(currentplaying);
-					currentplaying=0;
-					zsm_rewind(currentplaying);
-					zsmplay(currentplaying);
+					zsmstop(0);
+					if (currentplaying<MUSIC2) {
+						currentplaying=MUSIC1;
+					} else {
+						currentplaying=MUSIC2;
+					}
+					zsm_setaddr(0, currentplaying, 0xA000);
+					zsmplay(0);
 					exitloop=1;
 				} else
 				// If mouse is within the vertical coordinates of No text
@@ -539,11 +555,20 @@ void getynclick() {
 			if (btn2pressed==0) {
 				btn2pressed=1;
 				if (musicplaying==0) {
-					zsmplay(currentplaying);
+					currentplaying=MUSIC1;
+					zsm_setaddr(0, currentplaying, 0xA000);
+					zsmplay(0);
 					musicplaying=1;
 				} else {
-					zsmstop(currentplaying);
-					musicplaying=0;
+					if (currentplaying<MUSIC2) {
+						zsmstop(0);
+						currentplaying=MUSIC2;
+						zsm_setaddr(0, currentplaying, 0xA000);
+						zsmplay(0);
+					} else {
+						zsmstop(0);
+						musicplaying=0;
+					}
 				}
 			}
 		} else btn2pressed=0;
@@ -557,9 +582,15 @@ void showwinner() {
 	box(23, 18, 11, 2, 26);
 	showresult();
 	youwon();
-	zsmstop(currentplaying);
-	currentplaying=2;
-	zsmplay(currentplaying);
+	zsmstop(0);
+	if (currentplaying<MUSIC2) {
+		currentplaying=WIN1;
+	} else {
+		currentplaying=WIN2;
+	}
+	zsm_setaddr(0, currentplaying, 0xA000);
+	zsm_setloop(0, 0);
+	zsmplay(0);
 	getynclick();
 }
 
@@ -570,9 +601,15 @@ void showloser() {
 	box(23, 18, 11, 2, 26);
 	showresult();
 	youlost();
-	zsmstop(currentplaying);
-	currentplaying=1;
-	zsmplay(currentplaying);
+	zsmstop(0);
+	if (currentplaying<MUSIC2) {
+		currentplaying=LOSS1;
+	} else {
+		currentplaying=LOSS2;
+	}
+	zsm_setaddr(0, currentplaying, 0xA000);
+	zsm_setloop(0, 0);
+	zsmplay(0);
 	getynclick();
 }
 
@@ -746,7 +783,7 @@ int main() {
 	u8 cnt, btn;
 	struct _spriteattributes sa;
 
-	printf("loading assets...");
+	printf("loading assets...\n");
 
 	VERA_DC_HSCALE = 0x40;
 	VERA_DC_VSCALE = 0x40;
@@ -776,21 +813,22 @@ int main() {
 	configSprite(0, &sa);
 
 	// Load assets to memory
+	printf("loading image data...\n");
 	vload("bgimg.bin", 0x0000, 0);
 	vload("splash.bin", 0x0000, 1);
 	vload("tiles.bin", 0x9800, 0);
+	printf("loading music library...\n");
 	bload("zsmkit-a000.bin", 0xA000, 1);
-	bload("music.zsm", 0xA000, 2);
-	bload("loss.zsm", 0xA000, 8);
-	bload("win.zsm", 0xA000,12);
+	printf("loading first music theme...\n");
+	bload("music01.zsm", 0xA000, 2);	// 44K = 6 RAM banks
+	bload("loss01.zsm", 0xA000, 8);		// 31K = 4 RAM banks
+	bload("win01.zsm", 0xA000,12);		// 61K = 8 RAM banks
+	printf("loading second music theme...\n");
+	bload("music02.zsm", 0xA000, 20);	// 62K = 8 RAM banks
+	bload("loss02.zsm", 0xA000, 28);	// 2.2K = 1 RAM bank
+	bload("win02.zsm", 0xA000, 29);		// 3.4K = 1 RAM bank
 
 	initzsm();
-	zsm_setbank(0, 2);
-	zsm_setmem(0, 0xA000);
-	zsm_setbank(1, 8);
-	zsm_setmem(1, 0xA000);
-	zsm_setbank(2, 12);
-	zsm_setmem(2, 0xA000);
 
 	VERA_L0_CONFIG = 0x06; //bitmap mode, 4bpp color
 	VERA_L0_TILEBASE = SPLASH_BASE;
@@ -816,8 +854,14 @@ int main() {
 	VERA_DC_VIDEO = VERA_DC_VIDEO|0x50;
 
 	// Start playing the music
-	currentplaying=0;
-	zsmplay(currentplaying);
+	currentplaying=rndcircle();
+	if ((currentplaying==RED_CIRCLE) || (currentplaying==BLUE_CIRCLE || (currentplaying==CYAN_CIRCLE))) {
+		currentplaying=MUSIC1;
+	} else {
+		currentplaying=MUSIC2;
+	}
+	zsm_setaddr(0, currentplaying, 0xA000);
+	zsmplay(0);
 
 	// Wait for the user to start the game and let them toggle the music
 	while ((btn=getmouse(TMP_PTR0))!=1) {
@@ -825,11 +869,20 @@ int main() {
 			if (btn2pressed==0) {
 				btn2pressed=1;
 				if (musicplaying==0) {
-					zsmplay(currentplaying);
+					currentplaying=MUSIC1;
+					zsm_setaddr(0, currentplaying, 0xA000);
+					zsmplay(0);
 					musicplaying=1;
 				} else {
-					zsmstop(currentplaying);
-					musicplaying=0;
+					if (currentplaying<MUSIC2) {
+						zsmstop(0);
+						currentplaying=MUSIC2;
+						zsm_setaddr(0, currentplaying, 0xA000);
+						zsmplay(0);
+					} else {
+						zsmstop(0);
+						musicplaying=0;
+					}
 				}
 			}
 		} else btn2pressed=0;
@@ -860,11 +913,20 @@ int main() {
 			if (btn2pressed==0) {
 				btn2pressed=1;
 				if (musicplaying==0) {
-					zsmplay(currentplaying);
+					currentplaying=MUSIC1;
+					zsm_setaddr(0, currentplaying, 0xA000);
+					zsmplay(0);
 					musicplaying=1;
 				} else {
-					zsmstop(currentplaying);
-					musicplaying=0;
+					if (currentplaying<MUSIC2) {
+						zsmstop(0);
+						currentplaying=MUSIC2;
+						zsm_setaddr(0, currentplaying, 0xA000);
+						zsmplay(0);
+					} else {
+						zsmstop(0);
+						musicplaying=0;
+					}
 				}
 			}
 		} else

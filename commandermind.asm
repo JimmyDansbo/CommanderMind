@@ -15,6 +15,7 @@
 .export _zsm_setbank
 .export _zsm_setmem
 .export _zsm_rewind
+.export _zsm_setloop
 
 .segment "CODE"
 ; ZeroPage variables/pointers
@@ -53,6 +54,7 @@ ZSM_SETMEM	= $A01E
 ZSM_PLAY	= $A006
 ZSM_STOP	= $A009
 ZSM_REWIND	= $A00C
+ZSM_SETLOOP	= $A033
 
 RED_CIRCLE	= 1
 YELLOW_CIRCLE	= 5
@@ -118,6 +120,16 @@ _zsm_rewind:
 	sta	RAM_BANK
 	jmp	ZSM_REWIND
 
+; PER-PRIORITY: set or clear loop flag
+_zsm_setloop:
+	pha				; Save loop setting on stack
+	lda	#1			; Ensure correct RAM bank is selected before call
+	sta	RAM_BANK
+	jsr	popa			; Get priority ID into X
+	tax
+	pla				; Restore loop setting from stack and shift into Carryflag
+	lsr
+	jmp	ZSM_SETLOOP
 
 ; *****************************************************************************
 ; Use the SMC to reset the system

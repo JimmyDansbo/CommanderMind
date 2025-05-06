@@ -693,7 +693,7 @@ void considerguess() {
 						else {resx=13;++resy;}
 						f2used=1;
 					} else
-					if ((fc[0]==combination[3]) && (f1used==0)) {
+					if ((fc[0]==combination[3]) && (f3used==0)) {
 						gotoxy(resx, lineinfo[cnt].tiley+resy);
 						VERA_DATA0 = 0;
 						if (resx==13) ++resx;

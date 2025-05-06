@@ -517,6 +517,13 @@ void zsm_setaddr(u8 priority, u8 bank, u16 addr) {
 	zsm_setmem(priority, addr);
 }
 
+void switchtrack() {
+	zsmstop(0);
+	zsm_setbank(0, currentplaying);
+	zsm_setmem(0, 0xA000);
+	zsmplay(0);
+}
+
 /******************************************************************************
  Wait for the user to press the Yes or the No text
 ******************************************************************************/
@@ -536,14 +543,12 @@ void getynclick() {
 				// If mouse is within the vertical coordinates of Yes text
 				if ((mousex>=200) && (mousex<224)) { //YES button pressed
 					initgame();
-					zsmstop(0);
 					if (currentplaying<MUSIC2) {
 						currentplaying=MUSIC1;
 					} else {
 						currentplaying=MUSIC2;
 					}
-					zsm_setaddr(0, currentplaying, 0xA000);
-					zsmplay(0);
+					switchtrack();
 					exitloop=1;
 				} else
 				// If mouse is within the vertical coordinates of No text
@@ -556,15 +561,12 @@ void getynclick() {
 				btn2pressed=1;
 				if (musicplaying==0) {
 					currentplaying=MUSIC1;
-					zsm_setaddr(0, currentplaying, 0xA000);
-					zsmplay(0);
+					switchtrack();
 					musicplaying=1;
 				} else {
 					if (currentplaying<MUSIC2) {
-						zsmstop(0);
 						currentplaying=MUSIC2;
-						zsm_setaddr(0, currentplaying, 0xA000);
-						zsmplay(0);
+						switchtrack();
 					} else {
 						zsmstop(0);
 						musicplaying=0;
@@ -582,15 +584,13 @@ void showwinner() {
 	box(23, 18, 11, 2, 26);
 	showresult();
 	youwon();
-	zsmstop(0);
 	if (currentplaying<MUSIC2) {
 		currentplaying=WIN1;
 	} else {
 		currentplaying=WIN2;
 	}
-	zsm_setaddr(0, currentplaying, 0xA000);
+	switchtrack();
 	zsm_setloop(0, 0);
-	zsmplay(0);
 	getynclick();
 }
 
@@ -601,15 +601,13 @@ void showloser() {
 	box(23, 18, 11, 2, 26);
 	showresult();
 	youlost();
-	zsmstop(0);
 	if (currentplaying<MUSIC2) {
 		currentplaying=LOSS1;
 	} else {
 		currentplaying=LOSS2;
 	}
-	zsm_setaddr(0, currentplaying, 0xA000);
+	switchtrack();
 	zsm_setloop(0, 0);
-	zsmplay(0);
 	getynclick();
 }
 
@@ -870,15 +868,13 @@ int main() {
 				btn2pressed=1;
 				if (musicplaying==0) {
 					currentplaying=MUSIC1;
-					zsm_setaddr(0, currentplaying, 0xA000);
-					zsmplay(0);
+					switchtrack();
+					zsm_setloop(0, 0);
 					musicplaying=1;
 				} else {
 					if (currentplaying<MUSIC2) {
-						zsmstop(0);
 						currentplaying=MUSIC2;
-						zsm_setaddr(0, currentplaying, 0xA000);
-						zsmplay(0);
+						switchtrack();
 					} else {
 						zsmstop(0);
 						musicplaying=0;
@@ -914,15 +910,12 @@ int main() {
 				btn2pressed=1;
 				if (musicplaying==0) {
 					currentplaying=MUSIC1;
-					zsm_setaddr(0, currentplaying, 0xA000);
-					zsmplay(0);
+					switchtrack();
 					musicplaying=1;
 				} else {
 					if (currentplaying<MUSIC2) {
-						zsmstop(0);
 						currentplaying=MUSIC2;
-						zsm_setaddr(0, currentplaying, 0xA000);
-						zsmplay(0);
+						switchtrack();
 					} else {
 						zsmstop(0);
 						musicplaying=0;

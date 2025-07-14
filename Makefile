@@ -9,7 +9,7 @@ clean:
 sdcard:
 	rm $(SDCARD)
 	truncate -s 34M $(SDCARD)
-	parted -s $(SDCARD) mklabel msdos mkpart primary fat32 2048s -- -1
+	/sbin/parted -s $(SDCARD) mklabel msdos mkpart primary fat32 2048s -- -1
 	mformat -i $(SDCARD)@@1M -F
 	mcopy -v -i $(SDCARD)@@1M -o -m *.PRG *.BIN *.ZSM ::
 
